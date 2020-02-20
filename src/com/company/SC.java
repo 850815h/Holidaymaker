@@ -1,6 +1,7 @@
 package com.company;
 
 import javafx.application.Application;
+import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
@@ -8,8 +9,10 @@ import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import javafx.scene.text.TextAlignment;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
@@ -27,6 +30,18 @@ public class SC extends Application {
     private static final int BUTTON_MAX_WIDTH = 120;
     private static final int BUTTON_MAX_HEIGHT = 100;
     //private static boolean exit = false;
+
+    //*** GRID *********************************************************************************************************
+    public static GridPane uniGrid(){
+        GridPane grid = new GridPane();
+        grid.setPadding(new Insets(10, 10, 10, 10));
+        grid.setAlignment(Pos.CENTER);
+        grid.setHgap(8);
+        grid.setVgap(10);
+        return grid;
+    }
+
+
 
     //*** STAGE ********************************************************************************************************
 
@@ -207,8 +222,10 @@ public class SC extends Application {
          */
         Button button = new Button(txt);
 
-        button.setStyle(" -fx-stroke-width: 5");
+        //button.setStyle(" -fx-stroke-width: 5");
+        //button.setPadding( new Insets( 10, 44, 10, 44 ));
         button.setWrapText( true );
+        button.setTextAlignment( TextAlignment.CENTER );
         button.setMinWidth(BUTTON_MIN_WIDTH);
         button.setMinHeight(BUTTON_MIN_HEIGHT);
         button.setMaxWidth(BUTTON_MAX_WIDTH);
