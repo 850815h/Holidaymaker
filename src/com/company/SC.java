@@ -1,6 +1,7 @@
 package com.company;
 
 import javafx.application.Application;
+import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -8,6 +9,8 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.MouseButton;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
@@ -314,4 +317,44 @@ public class SC extends Application {
     public void start(Stage stage) throws Exception {
 
     }
+
+    //** MISC. *********************************************************************************************************
+
+    public static void resetRoomList(ObservableList<Room> roomList ){
+        while (roomList.size() > 0) {
+            roomList.remove(0);
+        }
+    }
+
+    //** MISC. *********************************************************************************************************
+
+    public static boolean mouseEventDoubleClick(MouseEvent mouseEvent){
+            if(mouseEvent.getButton().equals(MouseButton.PRIMARY)){
+                if(mouseEvent.getClickCount() == 2){
+                    System.out.println("Double clicked");
+                    return true;
+                }
+            }
+            return false;
+    }
+
+
+
+
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

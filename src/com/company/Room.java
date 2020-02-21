@@ -22,7 +22,7 @@ public class Room {
     private double rating;
     private boolean availability;
 
-    public Room(/*int id,*/ String city, int roomSize, Date bookingStart, Date bookingEnd, int maxAmountOfCustomers,
+    public Room(int id, String city, int roomSize, Date bookingStart, Date bookingEnd, int maxAmountOfCustomers,
                 boolean facilitiesRestaurant, boolean facilitiesPool, boolean facilitiesEveningEntertainment,
                 boolean facilitiesChildrenClub, boolean additionalServiceBoardHalf, boolean additionalServiceBoardFull,
                 boolean additionalServiceExtraBed, double pricePerNight, double rating, boolean availability) {
@@ -92,56 +92,81 @@ public class Room {
         this.maxAmountOfCustomers = maxAmountOfCustomers;
     }
 
-    public boolean isFacilitiesRestaurant() {
-        return facilitiesRestaurant;
+    public String isFacilitiesRestaurant() {
+        if( facilitiesRestaurant ){
+            return "Yes";
+        }
+        return "No";
     }
+    /*public boolean isFacilitiesRestaurant() {
+        return facilitiesRestaurant;
+    }*/
 
     public void setFacilitiesRestaurant(boolean facilitiesRestaurant) {
         this.facilitiesRestaurant = facilitiesRestaurant;
     }
 
-    public boolean isFacilitiesPool() {
-        return facilitiesPool;
+    public String isFacilitiesPool() {
+        if( facilitiesPool ){
+            return "Yes";
+        }
+        return "No";
     }
 
     public void setFacilitiesPool(boolean facilitiesPool) {
         this.facilitiesPool = facilitiesPool;
     }
 
-    public boolean isFacilitiesEveningEntertainment() {
-        return facilitiesEveningEntertainment;
+    public String isFacilitiesEveningEntertainment() {
+        if( facilitiesEveningEntertainment ){
+            return "Yes";
+        }
+        return "No";
     }
 
     public void setFacilitiesEveningEntertainment(boolean facilitiesEveningEntertainment) {
         this.facilitiesEveningEntertainment = facilitiesEveningEntertainment;
     }
 
-    public boolean isFacilitiesChildrenClub() {
-        return facilitiesChildrenClub;
+    public String isFacilitiesChildrenClub() {
+        if( facilitiesChildrenClub ){
+            return "Yes";
+        }
+        return "No";
+
     }
 
     public void setFacilitiesChildrenClub(boolean facilitiesChildrenClub) {
         this.facilitiesChildrenClub = facilitiesChildrenClub;
     }
 
-    public boolean isAdditionalServiceBoardHalf() {
-        return additionalServiceBoardHalf;
+    public String isAdditionalServiceBoardHalf() {
+        if( additionalServiceBoardHalf ){
+            return "Yes";
+        }
+        return "No";
     }
 
     public void setAdditionalServiceBoardHalf(boolean additionalServiceBoardHalf) {
         this.additionalServiceBoardHalf = additionalServiceBoardHalf;
     }
 
-    public boolean isAdditionalServiceBoardFull() {
-        return additionalServiceBoardFull;
+    public String isAdditionalServiceBoardFull() {
+        if( additionalServiceBoardFull ){
+            return "Yes";
+        }
+        return "No";
     }
 
     public void setAdditionalServiceBoardFull(boolean additionalServiceBoardFull) {
         this.additionalServiceBoardFull = additionalServiceBoardFull;
     }
 
-    public boolean isAdditionalServiceExtraBed() {
-        return additionalServiceExtraBed;
+    public String isAdditionalServiceExtraBed() {
+        if( additionalServiceExtraBed ){
+            return "Yes";
+        }
+        return "No";
     }
 
     public void setAdditionalServiceExtraBed(boolean additionalServiceExtraBed) {
@@ -164,8 +189,11 @@ public class Room {
         this.rating = rating;
     }
 
-    public boolean isAvailability() {
-        return availability;
+    public String isAvailability() {
+        if( availability ){
+            return "Yes";
+        }
+        return "No";
     }
 
     public void setAvailability(boolean availability) {
