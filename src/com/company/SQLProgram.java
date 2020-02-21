@@ -17,6 +17,7 @@ public class SQLProgram {
     private DatabaseMetaData db;
 
     private ArrayList<Room> rooms = new ArrayList<>();
+    private ArrayList<Customer> customers = new ArrayList<>();
     private ArrayList<String> customerNames = new ArrayList<>();
     private ArrayList<String> cityNames = new ArrayList<>();
 
@@ -28,19 +29,54 @@ public class SQLProgram {
     public SQLProgram() {
         connect();
         //selectCityName(1);
+        returnCustomers();
         returnCustomersNames();
         returnRooms();
 
         ///////////////////////
-        /*for( Room s : rooms ){
-            System.out.println( s.getCity() + " " + s.getRoomSize() );
-        }
+        updateRoomAvailability( 1, 0 );
 
-        for( String n : cityNames ){
-            System.out.println( n );
+        /*for( Room s : rooms ){
+            System.out.println( s.getCity() + " " + s.getRoomSize() + " " + s.isAvailability() );
         }*/
 
-        //System.out.println( selectCityName( 12 ) );
+        /*for( Customer customer : customers ){
+            System.out.println(customer.getName());
+        }*/
+    }
+
+    private void updateRoomAvailability(int roomId, int availability) {
+        String queries = "UPDATE rooms SET availability = ? WHERE id = ?;";
+
+        try {
+            preparedStatement = connection.prepareStatement(queries);
+            preparedStatement.setInt(1, availability);
+            preparedStatement.setInt(2, roomId);
+            preparedStatement.executeUpdate();
+            preparedStatement.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void returnCustomers() {
+        Statement stmt = null;
+        String query = "SELECT * FROM customers";
+        try {
+            stmt = connection.createStatement();
+            ResultSet rs = stmt.executeQuery(query);
+
+            while (rs.next()) {
+                int id = rs.getInt("id");
+                String name = rs.getString("customer_name");
+                int room = rs.getInt("room");
+
+                customers.add( new Customer(id,name,room));
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     private ArrayList<Room> returnRooms() {
@@ -51,6 +87,7 @@ public class SQLProgram {
             ResultSet rs = stmt.executeQuery(query);
 
             while (rs.next()) {
+                int id = rs.getInt("id");
                 int city = rs.getInt("city");
                 int roomSize = rs.getInt("room_size");
                 Date bookingStart = rs.getDate("booking_start");
@@ -67,9 +104,9 @@ public class SQLProgram {
                 double rating = rs.getInt("rating");
                 boolean availability = rs.getBoolean("availability");
 
-                rooms.add( new Room( selectCityName( city ), roomSize, bookingStart, bookingEnd, maxAmountOfCustomers, facilitiesRestaurant, facilitiesPool,
+                rooms.add(new Room(id, selectCityName(city), roomSize, bookingStart, bookingEnd, maxAmountOfCustomers, facilitiesRestaurant, facilitiesPool,
                         facilitiesEveningEntertainment, facilitiesChildrenClub, additionalServiceBoardHalf, additionalServiceBoardFull, additionalServiceExtraBed,
-                        pricePerNight, rating, availability ));
+                        pricePerNight, rating, availability));
             }
 
         } catch (Exception e) {
@@ -79,7 +116,7 @@ public class SQLProgram {
         return rooms;
     }
 
-    public ObservableList<Room> returnRoomsAvailableRestaurant() {
+    /*public ObservableList<Room> returnRoomsAvailableRestaurant() {
         ObservableList<Room> roomsAvailableRestaurant = FXCollections.observableArrayList();
         Statement stmt = null;
         String query = "SELECT * FROM rooms WHERE facilities_restaurant = 1";
@@ -104,18 +141,18 @@ public class SQLProgram {
                 double rating = rs.getInt("rating");
                 boolean availability = rs.getBoolean("availability");
 
-                roomsAvailableRestaurant.add( new Room( selectCityName( city ), roomSize, bookingStart, bookingEnd, maxAmountOfCustomers, facilitiesRestaurant, facilitiesPool,
+                roomsAvailableRestaurant.add(new Room(selectCityName(city), roomSize, bookingStart, bookingEnd, maxAmountOfCustomers, facilitiesRestaurant, facilitiesPool,
                         facilitiesEveningEntertainment, facilitiesChildrenClub, additionalServiceBoardHalf, additionalServiceBoardFull, additionalServiceExtraBed,
-                        pricePerNight, rating, availability ));
+                        pricePerNight, rating, availability));
             }
 
         } catch (Exception e) {
             e.printStackTrace();
         }
         return roomsAvailableRestaurant;
-    }
+    }*/
 
-    private String selectCityName(int cityID ){
+    private String selectCityName(int cityID) {
         Statement stmt = null;
         String query = "SELECT city_name" +
                 " FROM rooms, cities" +
@@ -138,7 +175,7 @@ public class SQLProgram {
     }
 
     public String registerNewCustomer(String userName) {
-        if( userName.isBlank() || userName.length() < 3 ){
+        if (userName.isBlank() || userName.length() < 3) {
             return "Try again with at least 3 symbols!";
         }
 
@@ -295,9 +332,21 @@ public class SQLProgram {
         }
     }
 
-    public ArrayList<String> getCustomerNames(){ return customerNames; }
-    public ArrayList<Room> getRooms(){ return rooms; }
-    public ArrayList<String> getCityNames(){ return cityNames; }
+    public ArrayList<String> getCustomerNames() {
+        return customerNames;
+    }
+
+    public ArrayList<Customer> getCustomers() {
+        return customers;
+    }
+
+    public ArrayList<Room> getRooms() {
+        return rooms;
+    }
+
+    public ArrayList<String> getCityNames() {
+        return cityNames;
+    }
     //public ObservableList<Room> getRoomsAvailableRestaurant(){ return roomsAvailableRestaurant; }
 
 }
