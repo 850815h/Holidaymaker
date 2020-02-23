@@ -4,6 +4,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
 import java.sql.*;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.sql.Connection;
@@ -28,21 +29,82 @@ public class SQLProgram {
 
     public SQLProgram() {
         connect();
-        //selectCityName(1);
-        returnCustomers();
-        returnCustomersNames();
-        returnRooms();
+        refreshMethods();
 
         ///////////////////////
-        updateRoomAvailability( 1, 0 );
 
         /*for( Room s : rooms ){
             System.out.println( s.getCity() + " " + s.getRoomSize() + " " + s.isAvailability() );
         }*/
 
         /*for( Customer customer : customers ){
-            System.out.println(customer.getName());
+            System.out.println(customer.getName() + customer.getRoom());
         }*/
+    }
+
+    public void refreshMethods(){
+        returnCustomers();
+        returnCustomersNames();
+        returnRooms();
+    }
+
+    public void removeCustomerFromRoom(int customerId){
+        String query = "UPDATE customers SET room = null WHERE id = ?;";
+
+        try {
+            preparedStatement = connection.prepareStatement(query);
+
+            //preparedStatement.setInt(1, 0);
+            preparedStatement.setInt(1, customerId);
+            preparedStatement.executeUpdate();
+            preparedStatement.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void addCustomerToRoom(int roomId, int customerId){
+        System.out.println("1 inne i addCustomerToRoom");
+        String query = "UPDATE customers SET room = ? WHERE id = ?;";
+
+        try {
+            preparedStatement = connection.prepareStatement(query);
+
+            preparedStatement.setInt(1, roomId);
+            preparedStatement.setInt(2, customerId);
+            preparedStatement.executeUpdate();
+            preparedStatement.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void updateRoomBookingStart(Date date, int roomId) {
+        String queries = "UPDATE rooms SET booking_start = ? WHERE id = ?;";
+
+        try {
+            preparedStatement = connection.prepareStatement(queries);
+            preparedStatement.setDate(1, date);
+            preparedStatement.setInt(2, roomId);
+            preparedStatement.executeUpdate();
+            preparedStatement.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void updateRoomBookingEnd(Date date, int roomId) {
+        String queries = "UPDATE rooms SET booking_end = ? WHERE id = ?;";
+
+        try {
+            preparedStatement = connection.prepareStatement(queries);
+            preparedStatement.setDate(1, date);
+            preparedStatement.setInt(2, roomId);
+            preparedStatement.executeUpdate();
+            preparedStatement.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     private void updateRoomAvailability(int roomId, int availability) {
@@ -79,7 +141,7 @@ public class SQLProgram {
         }
     }
 
-    private ArrayList<Room> returnRooms() {
+    private void returnRooms() {
         Statement stmt = null;
         String query = "SELECT * FROM rooms";
         try {
@@ -112,8 +174,6 @@ public class SQLProgram {
         } catch (Exception e) {
             e.printStackTrace();
         }
-
-        return rooms;
     }
 
     /*public ObservableList<Room> returnRoomsAvailableRestaurant() {

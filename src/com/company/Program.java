@@ -3,18 +3,17 @@ package com.company;
 import javafx.application.Application;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.collections.transformation.FilteredList;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
-import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 
 import java.sql.Date;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Scanner;
 
@@ -23,363 +22,188 @@ public class Program extends Application {
     private ObservableList<Customer> customersNames = FXCollections.observableArrayList();
     private ObservableList<Room> rooms = FXCollections.observableArrayList();
     private ObservableList<Customer> customers = FXCollections.observableArrayList();
-    private ObservableList<Customer> currentRoomRenters = FXCollections.observableArrayList();
     private ObservableList<Room> listWithFilteredRooms = FXCollections.observableArrayList();
-    private ObservableList<Room> poolFilterSearch = FXCollections.observableArrayList();
-    private ObservableList<Room> restaurantFilterSearch = FXCollections.observableArrayList();
-    private ObservableList<Room> childrenClubFilterSearch = FXCollections.observableArrayList();
-    //private ObservableList<Room> currentRoom = FXCollections.observableArrayList();
     private Room currentRoom = null;
-    private ObservableList<Room> tempTempListOfRooms = FXCollections.observableArrayList();
-    private ObservableList<Room> poolFilterSearchFull = FXCollections.observableArrayList();
-    private ObservableList<Room> tempRoomsPoolFull1 = FXCollections.observableArrayList();
-    private ObservableList<Room> tempRoomLists = FXCollections.observableArrayList();
-    private ObservableList<Room> tempCurrentLists = FXCollections.observableArrayList();
-    private ObservableList<Room> fillListWithFilteredResultAfterIsNotSelected = FXCollections.observableArrayList();
-    private ObservableList<Room> listOfRoomsForOneFilter = FXCollections.observableArrayList();
+    private Customer currentCustomer = null;
 
-
-    //private ArrayList<String> customersNames = new ArrayList<>();
-    private Scanner scanner = new Scanner(System.in);
+    private Scene menuMainScene;
+    private Scene menuRoomScene;
+    private Scene menuRoomSettingsScene;
+    private Scene menuAddCustomerScene;
     private Stage stagePrimary;
-    private Stage stageWindow;
-    private Scene sceneMain;
-    private Scene sceneAddUser;
-    private Scene sceneRoom;
-    private Scene sceneRoomSettings;
-    private Scene sceneRoomCancel;
-    private Scene sceneRoomBooking;
-    //TableView<Room> tableViewRoom;
 
-    private Date dateNow = new Date(2020, 02, 01);
-    private Date dateTomorrow = new Date(2020, 03, 01);
+    private LocalDate localDate = LocalDate.now();
+    private Date dateNow = Date.valueOf(localDate);
+    private Date dateTomorrow = dateNow;
+    private Date dateFrom = dateNow;
+    private Date dateTo = dateNow;
 
-    private Boolean boolFacilityRestaurantCheckedOut = false, boolFacilityPoolCheckedOut = false, boolFacilityEveningEntertainmentCheckedOut = false, boolFacilityChildrenClubCheckedOut = false, boolAddBoardFullCheckedOut = false, boolAddBoardHalvCheckedOut = false, boolAddExtraBedCheckedOut = false;
-    private Boolean[] boolRoomOptions = {boolFacilityRestaurantCheckedOut, boolFacilityPoolCheckedOut, boolFacilityEveningEntertainmentCheckedOut, boolFacilityChildrenClubCheckedOut, boolAddBoardFullCheckedOut, boolAddBoardHalvCheckedOut, boolAddExtraBedCheckedOut};
+    private Boolean stageActive = false;
+    private Boolean optionRating = false, optionAvailability = false, optionCheckedFacilityRestaurant = false, optionCheckedFacilityPool = false,
+            optionCheckedFacilityEveningEntertainment = false, optionCheckedFacilityChildrenClub = false,
+            optionCheckedAddBoardFull = false, optionCheckedAddBoardHalf = false, optionCheckedAddExtraBed = false;
+    private int optionRatingValue = 0;
+
 
     public void init(Stage stage) throws Exception {
     }
 
+    //-----------------------------------------------------------------------------------------------
+
     public void start(Stage stage) throws Exception {
         aaaTempRoom();
-        System.out.println("1");
         ///////////////////////////////////////////
         getRooms();
-        System.out.println("2");
         getCustomers();
-        System.out.println("3");
         menuAddUser();
-        System.out.println("4");
         menuRoom();
-        System.out.println("5");
         menuRoomChangeRoomSettings();
-        System.out.println("6");
         ///////////////////////////////////////////
 
         //System.out.println(currentRoom.size() + " CurrentRoom Size");
-
-        stageWindow(sceneRoom);
+        //stageStage();
+        //stageWindow(menuRoom());
         //stageWindow(sceneRoomSettings);
-        //menuMain();
+        //mainStage();
+        //System.out.println("----------------");
+
+        mainStage(menuMain());
+    }
+
+    //-----------------------------------------------------------------------------------------------
+
+    private void aaaa() {
+        String[] letters = {"Faris", "Erik", "Nils", "Victor", "Patrik", "Jim", "Tobbe", "Mantas", "Shala", "Matthias", "Helena",
+                "Sebbe", "Tobias", "Alberts", "Sandra", "Anna", "Lisa", "Johan W", "Benjamin", "Ammar", "Aling", "Soue", "Chang", "Arnold", "Sture", "Hamid", "Shoa", "Annie", "Stao", "Kurre", "Ammar"};
+        /*Arrays.stream(letters)
+                .filter( x -> x.toLowerCase().startsWith("a"))
+                .filter( x -> x.toLowerCase().contains("n"))
+                .forEach(System.out::println);*/
+
+
     }
 
     private void aaaTempRoom() {
-        /*currentRoom.add( new Room(1, "Malmö", 19, dateNow, dateTomorrow, 4,
+        currentRoom = new Room(1, "Malmö", 19, dateNow, dateTomorrow, 4,
                 true, true, true, true,
                 true, true, true,
-                12, 9, true));*/
+                12, 9, true);
+    }
+
+    private void stageStage() {
+        //Stage stage = SC.uniStageMain("TEST STAGE");
+        Stage stage = new Stage();
+        stage.setTitle("stageStage");
+        GridPane grid = SC.uniGrid();
+        Scene scene = new Scene(grid);
+
+        Button buttonExit = SC.uniButton("Exit");
+        buttonExit.setOnAction(e -> stage.close());
+
+        DatePicker datePicker = new DatePicker();
+        datePicker.setPromptText(dateNow.toString());
+        datePicker.setOnAction(e -> {
+            System.out.println(dateNow.toLocalDate() + " dateNow");
+            System.out.println(datePicker.getValue() + " datePicker.getValue()");
+            dateTomorrow = Date.valueOf(datePicker.getValue());
+            if (dateTomorrow.toLocalDate().isBefore(dateNow.toLocalDate())) {
+                System.out.println("Välj annat datum, senare än idag eller samma");
+            }
+            System.out.println(dateTomorrow + " dateTomorrow");
+        });
+
+
+        grid.add(buttonExit, 0, 0);
+        grid.add(datePicker, 0, 1);
+
+        stage.setScene(scene);
+        stage.show();
     }
 
     private void stageWindow(Scene newScene) {
-        //Stage stage = SC.uniStageMain("TEST STAGE");
-        Stage stage = new Stage();
+        Stage stage = SC.uniStageMain("TEST STAGE");
+        //Stage stage = new Stage();
         GridPane grid = new GridPane();
         Scene scene = newScene;
 
         grid.setPadding(new Insets(10, 10, 10, 10));
 
+        DatePicker datePicker = new DatePicker();
 
-        grid.getChildren().addAll();
+
+        grid.add(datePicker, 0, 0);
+
         stage.setScene(scene);
         stage.show();
-        stageWindow = stage;
+        //stageWindow = stage;
     }
 
-    private void menuMain() {
-        Stage stage = SC.uniStageMain("MAIN MENU");
-        //Stage stage = new Stage();
-        GridPane grid = new GridPane();
-        Scene scene = new Scene(grid);
+    //-----------------------------------------------------------------------------------------------
 
-        grid.setMinSize(333, 333);
-        grid.setPadding(new Insets(10, 10, 10, 10));
-        grid.setVgap(8);
-        grid.setHgap(10);
+    private Stage mainStage(Scene newScene) {
+        Stage stage = SC.uniStageMain("TEST STAGE");
+        Scene scene = newScene;
+
+        stage.setScene(scene);
+        stage.show();
+        stagePrimary = stage;
+        return stage;
+    }
+
+    private Stage mainStageTest(Scene newScene) {
+        Stage stage = stagePrimary;
+
+        stage.setScene(newScene);
+        stagePrimary = stage;
+        return stage;
+    }
+
+    private Scene menuMain() {
+        GridPane grid = SC.uniGrid();
 
         Button buttonAddUser = SC.uniButton("Add User");
         buttonAddUser.setOnAction(e -> {
-            stage.setScene(sceneAddUser);
+            //stagePrimary.setScene(menuAddUser());
+            mainStageTest( menuAddUser());
         });
 
         Button buttonRoomBooking = SC.uniButton("Rooms\nBooking\nCancellation");
         buttonRoomBooking.setOnAction(e -> {
-            stage.setScene(sceneRoom);
+            stagePrimary.setScene(menuRoom());
         });
 
         Button buttonQuit = SC.uniButton("Quit");
-        buttonQuit.setOnAction(e -> stage.close());
+        buttonQuit.setOnAction(e -> stagePrimary.close());
 
-        GridPane.setConstraints(buttonAddUser, 0, 1);
-        GridPane.setConstraints(buttonRoomBooking, 0, 2);
-        GridPane.setConstraints(buttonQuit, 0, 4);
-        //GridPane userAdd = menuAddUser();
-        //GridPane.setConstraints( userAdd, 1, 1 );
+        grid.add(buttonAddUser, 0, 1);
+        grid.add(buttonRoomBooking, 0, 2);
+        grid.add(buttonQuit, 0, 4);
 
-        grid.getChildren().addAll(buttonAddUser, buttonRoomBooking, buttonQuit);
-        stage.setScene(scene);
-        sceneMain = scene;
-        stagePrimary = stage;
-        stage.show();
-    }
-
-    private void menuAddUser() {
-        Stage stagea = SC.uniStageMain("Add User");
-        Stage stage = new Stage();
-        stage.setTitle("Add User");
-        GridPane grid = new GridPane();
-        Scene scene = new Scene(grid);
-
-        grid.setMinSize(333, 333);
-        grid.setPadding(new Insets(10, 10, 10, 10));
-        grid.setVgap(8);
-        grid.setHgap(10);
-
-        /*//Password
-        Label passwordLabel = new Label("Password");
-        GridPane.setConstraints( passwordLabel, 0, 1 );
-        TextField passwordTextField = new TextField();
-        passwordTextField.setPromptText("Password");
-        GridPane.setConstraints(passwordTextField, 1, 1 );*/
-
-        //Name
-        Label labelUsername = new Label("Register/add new user");
-        GridPane.setConstraints(labelUsername, 0, 0);
-
-        TextField textFieldUsername = new TextField();
-        textFieldUsername.setPromptText("Username");
-        GridPane.setConstraints(textFieldUsername, 0, 1);
-
-        Label labelMsg = new Label();
-        GridPane.setConstraints(labelMsg, 0, 2);
-
-        Button buttonAddUser = SC.uniButton("Add user");
-        GridPane.setConstraints(buttonAddUser, 1, 1);
-        buttonAddUser.setOnAction(e -> {
-            System.out.println(textFieldUsername.getText());
-            labelMsg.setText(sqlProgram.registerNewCustomer(textFieldUsername.getText()));
-            /*if (!textFieldUsername.getText().isBlank() && textFieldUsername.getText().length() >= 3) {
-                customersNames.add(new Customer(textFieldUsername.getText()));
-            }*/
-            textFieldUsername.clear();
-        });
-
-        /*ListView<String> listViewUsernames = new ListView<>();
-        listViewUsernames.setPrefWidth(100);
-        listViewUsernames.setPrefHeight(200);
-        listViewUsernames.getItems().addAll(sqlProgram.getUserNames());
-        GridPane.setConstraints( listViewUsernames, 0, 3 );*/
-        TableView<Customer> tableViewCustomer = new TableView<>();
-        tableViewCustomer.setItems(getCustomers());
-        //tableViewCustomer.setPrefWidth(160);
-        tableViewCustomer.setMaxHeight(210);
-        tableViewCustomer.setMaxWidth(210);
-        tableViewCustomer.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
-        TableColumn<Customer, String> tableColumnCustomerName = new TableColumn<>("Name");
-        //tableColumnCustomerName.setMinWidth(150);
-        tableColumnCustomerName.setMaxWidth(200);
-        tableColumnCustomerName.setCellValueFactory(new PropertyValueFactory<>("name"));
-        /*TableColumn<Customer, Integer> tableColumnCustomerAge = new TableColumn<>("Age");
-        tableColumnCustomerAge.setMinWidth( 30 );
-        tableColumnCustomerAge.setMaxWidth( 40 );
-        tableColumnCustomerAge.setCellValueFactory( new PropertyValueFactory<>("age"));*/
-        tableViewCustomer.getColumns().addAll(tableColumnCustomerName);
-        GridPane.setConstraints(tableViewCustomer, 0, 3);
-
-
-        Button buttonMainMenu = SC.uniButton("Cancel");
-        GridPane.setConstraints(buttonMainMenu, 1, 2);
-        buttonMainMenu.setOnAction(e -> stagePrimary.setScene(sceneMain));
-
-        /*Button vButtonAddUser = SC.uniButton("Add user");
-        Button vButtonExit = SC.buttonCloseCurrentWindow(stage, "EXIT", 50, 50);
-        TextField addNameField = new TextField();
-        ImageView image = SC.imageCover("hotel");
-
-        image.setFitWidth(640);
-        image.setFitHeight(100);
-        image.setPreserveRatio(true);
-        image.setSmooth(true);
-        image.setCache(true);
-
-        hBox.setAlignment( Pos.CENTER );
-        hBox.getChildren().addAll( image );
-        vBox.getChildren().addAll( vButtonAddUser, vButtonExit );
-
-        borderPane.setTop( hBox );
-        borderPane.setLeft( vBox );*/
-
-        grid.setAlignment(Pos.CENTER);
-        grid.getChildren().addAll(labelUsername, textFieldUsername, buttonAddUser, buttonMainMenu,
-                labelMsg, tableViewCustomer);
-        //stage.setScene( scene );
-        //stage.show();
-        //return scene;
-        sceneAddUser = scene;
-    }
-
-    private Scene menuRoomChangeRoomSettings() {
-        System.out.println("Inne i menuRoomChangeRoomSettings");
-        GridPane grid = new GridPane();
-        Scene scene = new Scene(grid);
-
-        /*ListView<String> listRent = new ListView<>();
-        listRent.setPrefWidth(200);
-        listRent.setPrefHeight(200);
-        listRent.getItems().addAll(sqlProgram.getCustomerNames());
-        ListView<String> listCancel = new ListView<>();
-        listCancel.setPrefWidth(200);
-        listCancel.setPrefHeight(200);
-        listCancel.getItems().addAll(sqlProgram.getCustomerNames());*/
-
-        //-----------------------------------------------------------------------------------------------
-
-        Button buttonRoomRent = SC.uniButton("Add customer to\nrent room");
-        buttonRoomRent.setOnAction(e -> stagePrimary.setScene(sceneRoom));
-        Button buttonRoomCancel = SC.uniButton("Remove customer from\nrenting list");
-        buttonRoomCancel.setOnAction(e -> stagePrimary.setScene(sceneRoom));
-        Button buttonSceneCancel = SC.uniButton("Cancel");
-        //buttonSceneCancel.setOnAction(e -> stageWindow.setScene(sceneRoom));
-        buttonSceneCancel.setOnAction(e -> stageWindow.setScene( menuRoom() ));
-        Button buttonSceneExit = SC.uniButton("Exit");
-        buttonSceneExit.setOnAction(e -> stageWindow.close());
-
-        //-----------------------------------------------------------------------------------------------
-
-        TableView<Customer> tableViewRenter = new TableView<>();
-        if (currentRoom != null) {
-            tableViewRenter.setItems(returnRenters(currentRoom.getId()));
-        }
-        //tableViewRenter.setItems(returnRenters(1));
-        //tableViewRenter.setPrefWidth(160);
-        //tableViewRenter.setMaxHeight(200);
-        //tableViewRenter.setMaxWidth(200);
-        tableViewRenter.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
-        //tableColumnCustomerName.setMinWidth(150);
-        //tableColumnCustomerName.setMaxWidth(200);
-        TableColumn<Customer, Character> tableColumnRenterName = new TableColumn<>("Renter Name");
-        tableColumnRenterName.setCellValueFactory(new PropertyValueFactory<>("name"));
-
-        //tableColumnCustomerRoomId.setMinWidth( 30 );
-        tableViewRenter.getColumns().addAll(tableColumnRenterName);
-
-        //-----------------------------------------------------------------------------------------------
-
-        TableView<Customer> tableViewCustomer = new TableView<>();
-        tableViewCustomer.setItems(customers);
-        //tableViewCustomer.setItems(returnRenters(1));
-        //tableViewCustomer.setPrefWidth(160);
-        //tableViewCustomer.setMaxHeight(200);
-        //tableViewCustomer.setMaxWidth(200);
-        tableViewCustomer.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
-        //tableColumnCustomerName.setMinWidth(150);
-        //tableColumnCustomerName.setMaxWidth(200);
-        TableColumn<Customer, Character> tableColumnCustomerName = new TableColumn<>("Available Customers");
-        tableColumnCustomerName.setCellValueFactory(new PropertyValueFactory<>("name"));
-
-        //tableColumnCustomerRoomId.setMinWidth( 30 );
-        tableViewCustomer.getColumns().addAll(tableColumnCustomerName);
-
-        //-----------------------------------------------------------------------------------------------
-
-        Label label = new Label();
-        if (currentRoom != null) {
-            label.setText("Select customers that \n" +
-                    "City: " + currentRoom.getCity() + "\n" +
-                    "Renters: " + "\n" +
-                    "Rent per night: " + "\n");
-
-            System.out.println(currentRoom.getCity() + " currentRoom.getCity()\nfrom menuSettings");
-        }
-        //-----------------------------------------------------------------------------------------------
-
-
-        grid.setPadding(new Insets(20, 20, 20, 20));
-        grid.setAlignment(Pos.CENTER);
-        grid.setHgap(10);
-        grid.setVgap(10);
-
-        grid.add(label, 0, 0);
-        grid.add(buttonRoomRent, 0, 1);
-        grid.add(tableViewRenter, 0, 2);
-
-        grid.add(buttonRoomCancel, 1, 1);
-        grid.add(tableViewCustomer, 1, 2);
-
-        // node, columnIndex, rowIndex, columnSpan, rowSpan:
-        grid.add(buttonSceneCancel, 0, 3, 1, 1);
-        grid.add(buttonSceneExit, 0, 4, 1, 1);
-
-        //-----------------------------------------------------------------------------------------------
-
-        sceneRoomSettings = scene;
+        Scene scene = SC.uniScene(grid);
         return scene;
     }
 
-    private ObservableList<Customer> returnRenters(int roomId) {
-        ObservableList<Customer> customers = FXCollections.observableArrayList();
-
-        for (Customer customer : this.customers) {
-            if (customer.getRoom() == roomId) {
-                customers.add(customer);
-            }
-        }
-        currentRoomRenters = customers;
-        return customers;
-    }
-
     private Scene menuRoom() {
-        System.out.println("Inne i menuRoom");
+        listWithFilteredRooms = rooms;
+
+        /*GridPane gridMain = SC.uniGrid();
+        GridPane gridTop = SC.uniGrid();
+        GridPane gridCenter = SC.uniGrid();
+        GridPane gridBottom = SC.uniGrid();*/
         GridPane gridMain = SC.uniGrid();
-        GridPane gridOptions = SC.uniGrid();
-        GridPane grid = SC.uniGrid();
-        Scene scene = new Scene(gridMain);
-        HBox hBox = new HBox();
-        Button addUserButton = new Button("Add User");
-        CheckBox checkBoxFacilitiesRestaurant = new CheckBox("Restaurant");
-        CheckBox checkBoxFacilitiesPool = new CheckBox("Pool");
-        CheckBox checkBoxFacilitiesChildrenClub = new CheckBox("Children Club");
-        CheckBox checkBoxFacilitiesEveningEntertainment = new CheckBox("Evening Entertainment");
-        CheckBox checkBoxAdditionalBoardHalf = new CheckBox("Half board");
-        CheckBox checkBoxAdditionalBoardFull = new CheckBox("Full board");
-        CheckBox checkBoxAdditionalExtraBed = new CheckBox("Extra Bed");
-        ComboBox comboBoxRating = new ComboBox();
+        GridPane gridTop = SC.uniGrid();
+        GridPane gridCenter = SC.uniGrid();
+        GridPane gridBottom = SC.uniGrid();
 
-        //-----------------------------------------------------------------------------------------------
+        //-----------------------------------------------------------------------------------------TableView
 
-        TableView<Room> tableViewRoom = new TableView();
-        tableViewRoom.setItems(rooms);
-        tableViewRoom.setMaxHeight(333);
-        tableViewRoom.setMaxWidth(555);
-        //tableViewRoom.setPadding(new Insets(10, 10, 10, 10));
-        //tableViewRoom.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
+        TableView<Room> tableViewRoom = SC.uniTableView();
+        tableViewRoom.setItems(listWithFilteredRooms);
+        tableViewRoom.setPlaceholder(SC.uniLabel("Your search didn't match any of our rooms... :("));
+
         tableViewRoom.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
 
-        //-----------------------------------------------------------------------------------------------
-
-        comboBoxRating.setPromptText("Rating");
-        comboBoxRating.getItems().addAll("1", "2");
-
-        //-----------------------------------------------------------------------------------------------
+        //-----------------------------------------------------------------------------------------TableColumn
 
         //RoomsCity
         TableColumn<Room, String> tableColumnCity = new TableColumn("City");
@@ -424,7 +248,7 @@ public class Program extends Application {
         TableColumn<Room, Double> tableColumnRating = new TableColumn("Rating");
         tableColumnRating.setCellValueFactory(new PropertyValueFactory<>("rating"));
         //Rooms Availability
-        TableColumn<Room, Boolean> tableColumnAvailability = new TableColumn("Availability");
+        TableColumn<Room, Boolean> tableColumnAvailability = new TableColumn("Available");
         tableColumnAvailability.setCellValueFactory(new PropertyValueFactory<>("availability"));
 
         tableViewRoom.getColumns().addAll(tableColumnCity, tableColumnRoomSize, tableColumnBookingStart, tableColumnBookingEnd,
@@ -432,628 +256,638 @@ public class Program extends Application {
                 tableColumnFacilitiesChildrenClub, tableColumnAdditionalServiceBoardHalf, tableColumnAdditionalServiceBoardFull,
                 tableColumnAdditionalServiceExtraBed, tableColumnPricePerNight, tableColumnRating, tableColumnAvailability);
 
-        //-----------------------------------------------------------------------------------------------
+        //---------------------------------------------------------------------------------------------CheckBox
+
+        CheckBox checkBoxFacilitiesRestaurant = new CheckBox("Restaurant");
+        CheckBox checkBoxFacilitiesPool = new CheckBox("Pool");
+        CheckBox checkBoxFacilitiesChildrenClub = new CheckBox("Children Club");
+        CheckBox checkBoxFacilitiesEveningEntertainment = new CheckBox("Evening Entertainment");
+        CheckBox checkBoxAdditionalBoardHalf = new CheckBox("Half board");
+        CheckBox checkBoxAdditionalBoardFull = new CheckBox("Full board");
+        CheckBox checkBoxAdditionalExtraBed = new CheckBox("Extra Bed");
+        CheckBox checkBoxAvailability = new CheckBox("Available");
 
         checkBoxFacilitiesRestaurant.setOnAction(e -> roomOptionFacilitiesRestaurant(checkBoxFacilitiesRestaurant, tableViewRoom));
         checkBoxFacilitiesPool.setOnAction(e -> roomOptionFacilitiesPool(checkBoxFacilitiesPool, tableViewRoom));
         checkBoxFacilitiesChildrenClub.setOnAction(e -> roomOptionFacilitiesChildrenClub(checkBoxFacilitiesChildrenClub, tableViewRoom));
-        checkBoxFacilitiesEveningEntertainment.setOnAction(e -> roomOptionRoomSize(checkBoxFacilitiesEveningEntertainment, tableViewRoom));
-        checkBoxAdditionalBoardHalf.setOnAction(e -> roomOptionFacilitiesPool(checkBoxAdditionalBoardHalf, tableViewRoom));
-        checkBoxAdditionalBoardFull.setOnAction(e -> roomOptionFacilitiesPool(checkBoxAdditionalBoardFull, tableViewRoom));
-        checkBoxAdditionalExtraBed.setOnAction(e -> roomOptionFacilitiesPool(checkBoxAdditionalExtraBed, tableViewRoom));
-        /*
-        checkBoxFacilitiesRestaurant.setOnAction(e -> {
-            ObservableList<Room> tempObsList = FXCollections.observableArrayList();
-            if (checkBoxFacilitiesRestaurant.isSelected()) {
-                for (Room r : rooms) {
-                    if (r.isAvailability()) {
-                        tempObsList.add(r);
-                    }
-                }
-                tableViewRoom.setItems(tempObsList);
-                //tableViewRoom.setItems( sqlProgram.returnRoomsAvailableRestaurant());
-                deleteOnCheckBox();
-            } else if (!checkBoxFacilitiesRestaurant.isSelected()) {
-                tableViewRoom.setItems(getRooms());
-                deleteOnCheckBox();
-            }
+        checkBoxFacilitiesEveningEntertainment.setOnAction(e -> roomOptionFacilitiesEveningEntertainment(checkBoxFacilitiesEveningEntertainment, tableViewRoom));
+        checkBoxAdditionalBoardHalf.setOnAction(e -> roomOptionAdditionalBoardHalf(checkBoxAdditionalBoardHalf, tableViewRoom));
+        checkBoxAdditionalBoardFull.setOnAction(e -> roomOptionAdditionalBoardFull(checkBoxAdditionalBoardFull, tableViewRoom));
+        checkBoxAdditionalExtraBed.setOnAction(e -> roomOptionAdditionalExtraBed(checkBoxAdditionalExtraBed, tableViewRoom));
+        checkBoxAvailability.setOnAction(e -> roomOptionAvailability(checkBoxAvailability, tableViewRoom));
+
+        //--------------------------------------------------------------------------------------------ComboBox
+
+        ComboBox comboBoxRating = new ComboBox();
+
+        comboBoxRating.setPromptText("Rating");
+        comboBoxRating.getItems().addAll("0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10");
+
+        comboBoxRating.setOnAction(e -> {
+            String ratingValue = comboBoxRating.getValue().toString();
+            optionRatingValue = Integer.parseInt(ratingValue);
+            roomOptionRating(comboBoxRating, tableViewRoom);
+            System.out.println(optionRatingValue + " optionRatingValue");
         });
-         */
-        //-----------------------------------------------------------------------------------------------
+
+        //-----------------------------------------------------------------------------------------------Button
 
         Button buttonCancel = SC.uniButton("Cancel");
-        buttonCancel.setOnAction(e -> stagePrimary.setScene(sceneMain));
+        buttonCancel.setOnAction(e -> stagePrimary.setScene(menuMain()));
 
         Button buttonExit = SC.uniButton("Exit");
-        buttonExit.setOnAction(e -> stageWindow.close());
+        buttonExit.setOnAction(e -> stagePrimary.close());
 
         tableViewRoom.setOnMouseClicked(e -> {
-            if( SC.mouseEventDoubleClick( e )) {
-                System.out.println("Clicked with mouse!");
+            if (SC.mouseEventDoubleClick(e)) {
+                System.out.println("menuRoom - Uppdaterar currentRoom!");
                 currentRoom = tableViewRoom.getSelectionModel().getSelectedItem();
-                stageWindow.setScene(menuRoomChangeRoomSettings());
-                System.out.println(currentRoom.getCity());
+                stagePrimary.setScene(menuRoomChangeRoomSettings());
             }
-
-            /*if (SC.mouseEventDoubleClick(e)) {
-                TablePosition tablePosition = tableViewRoom.getSelectionModel().getSelectedCells().get(0);
-                int rowClicked = tablePosition.getRow();
-                currentRoom = tableViewRoom.getItems().get( rowClicked );
-                System.out.println(currentRoom.getCity());
-                stageWindow.setScene(sceneRoomSettings);
-            }*/
         });
-        //-----------------------------------------------------------------------------------------------
-
-        GridPane.setConstraints(gridOptions, 0, 0);
-        GridPane.setConstraints(grid, 0, 1);
-        GridPane.setConstraints(checkBoxFacilitiesRestaurant, 0, 0);
-        GridPane.setConstraints(checkBoxFacilitiesPool, 1, 0);
-        GridPane.setConstraints(checkBoxFacilitiesChildrenClub, 2, 0);
-        GridPane.setConstraints(checkBoxFacilitiesEveningEntertainment, 3, 0);
-        GridPane.setConstraints(checkBoxAdditionalBoardHalf, 0, 1);
-        GridPane.setConstraints(checkBoxAdditionalBoardFull, 1, 1);
-        GridPane.setConstraints(checkBoxAdditionalExtraBed, 2, 1);
-        GridPane.setConstraints(comboBoxRating, 3, 1);
-        GridPane.setConstraints(tableViewRoom, 0, 1);
-        GridPane.setConstraints(buttonCancel, 0, 2);
-        GridPane.setConstraints(buttonExit, 1, 2);
-
-        gridOptions.getChildren().addAll(comboBoxRating, checkBoxFacilitiesRestaurant, checkBoxFacilitiesPool, checkBoxFacilitiesEveningEntertainment,
-                checkBoxFacilitiesChildrenClub, checkBoxAdditionalBoardFull, checkBoxAdditionalExtraBed, checkBoxAdditionalBoardHalf);
-        grid.getChildren().addAll(buttonExit, buttonCancel, tableViewRoom);
-        /*
-        grid.getChildren().addAll(buttonCancel, checkBoxFacilitiesRestaurant, checkBoxFacilitiesPool, checkBoxFacilitiesEveningEntertainment,
-                checkBoxFacilitiesChildrenClub, checkBoxAdditionalBoardFull, checkBoxAdditionalExtraBed, checkBoxAdditionalBoardHalf, tableViewRoom);
-         */
-        gridMain.getChildren().addAll(gridOptions, grid);
 
         //-----------------------------------------------------------------------------------------------
 
-        //stage.setScene( scene );
-        //stage.show();
-        sceneRoom = scene;
+        gridMain.add(gridTop, 0, 0);
+        gridMain.add(gridCenter, 0, 1);
+        gridMain.add(gridBottom, 0, 2);
+
+        gridTop.add(checkBoxAvailability, 0, 0);
+        gridTop.add(checkBoxFacilitiesRestaurant, 1, 0);
+        gridTop.add(checkBoxFacilitiesPool, 2, 0);
+        gridTop.add(checkBoxFacilitiesChildrenClub, 3, 0);
+        gridTop.add(checkBoxFacilitiesEveningEntertainment, 4, 0);
+        gridTop.add(checkBoxAdditionalBoardHalf, 0, 1);
+        gridTop.add(checkBoxAdditionalBoardFull, 1, 1);
+        gridTop.add(checkBoxAdditionalExtraBed, 2, 1);
+        gridTop.add(comboBoxRating, 3, 1);
+
+        gridCenter.add(tableViewRoom, 0, 1);
+
+        gridBottom.add(buttonCancel, 0, 0);
+        gridBottom.add(buttonExit, 0, 1);
+
+        //------------------------------------------------------------------------------------------return
+
+        Scene scene = SC.uniScene(gridMain);
         return scene;
     }
 
-    private Boolean checkAfterListeners() {
-        for (Boolean bool : boolRoomOptions) {
-            if (bool) {
-                return true;
-            }
+    private Scene menuRoomChangeRoomSettings() {
+        GridPane gridMain = SC.uniGrid();
+        GridPane gridTop = SC.uniGrid();
+        GridPane gridCenter = SC.uniGrid();
+        GridPane gridBottom = SC.uniGrid();
+
+        //--------------------------------------------------------------------------------------------CheckBox
+
+        CheckBox checkBoxExtraBed = new CheckBox();
+        checkBoxExtraBed.setText("Extra bed (costs " + (currentRoom.getPricePerNight() / 10) + " kr. extra)");
+
+        //---------------------------------------------------------------------------------------------DatePicker
+
+        DatePicker datePickerBookingFrom = new DatePicker();
+        datePickerBookingFrom.setMaxSize(200, 100);
+        datePickerBookingFrom.setPromptText("Rent room from this date");
+        datePickerBookingFrom.setOnAction(e -> {
+            dateFrom = Date.valueOf(datePickerBookingFrom.getValue());
+            roomOptionDateBookingFrom();
+        });
+
+        DatePicker datePickerBookingTo = new DatePicker();
+        datePickerBookingTo.setMaxSize(200, 100);
+        datePickerBookingTo.setPromptText("Rent room to this date");
+        datePickerBookingTo.setOnAction(e -> {
+            dateTo = Date.valueOf(datePickerBookingTo.getValue());
+            roomOptionDateBookingTo();
+        });
+
+        //------------------------------------------------------------------------------------------Button
+
+        Button buttonSaveSettings = SC.uniButton("Save settings");
+        //buttonSaveSettings.setOnAction(e -> stagePrimary.setScene(sceneRoom));
+
+        Button buttonRoomCancel = SC.uniButton("Clear booking");
+        //buttonRoomCancel.setOnAction(e -> stagePrimary.setScene(sceneRoom));
+
+        Button buttonSceneCancel = SC.uniButton("Cancel");
+        buttonSceneCancel.setOnAction(e -> stagePrimary.setScene(menuRoom()));
+
+        Button buttonSceneExit = SC.uniButton("Exit");
+        buttonSceneExit.setOnAction(e -> stagePrimary.close());
+
+        //----------------------------------------------------------------------------------tableViewRenter
+
+        TableView<Customer> tableViewRenter = SC.uniTableView();
+        if (currentRoom != null) {
+
+            tableViewRenter.setItems(returnRenters(currentRoom.getId()));
+
+            TableColumn<Customer, Character> tableColumnRenterName = new TableColumn<>("Renter Name");
+            tableColumnRenterName.setCellValueFactory(new PropertyValueFactory<>("name"));
+
+            //tableColumnCustomerRoomId.setMinWidth( 30 );
+            tableViewRenter.getColumns().addAll(tableColumnRenterName);
+            tableViewRenter.setBackground(new Background(new BackgroundFill(Color.GRAY, CornerRadii.EMPTY, Insets.EMPTY)));
         }
-        return false;
+        if (returnRenters(currentRoom.getId()).size() <= 0) {
+            tableViewRenter.setBackground(new Background(new BackgroundFill(Color.GRAY, CornerRadii.EMPTY, Insets.EMPTY)));
+            tableViewRenter.setPlaceholder(SC.uniLabel("This room has no guests... Jet!"));
+        }
+
+        tableViewRenter.setOnMouseClicked(e -> {
+            System.out.println("1 Inne i tableViewRenter");
+            if (SC.mouseEventDoubleClick(e) && (returnRenters(currentRoom.getId()).size() > 0)) {
+                System.out.println("2 Inne i tableViewRenter");
+
+                currentCustomer = tableViewRenter.getSelectionModel().getSelectedItem();
+                sqlProgram.removeCustomerFromRoom(currentCustomer.getId());
+
+                /*if (returnRenters(currentRoom.getId()).size() < currentRoom.getMaxAmountOfCustomers()) {
+                    System.out.println("2 Inne i tableViewRenter");
+
+                }*/
+            }
+        });
+
+        //--------------------------------------------------------------------------------------tableViewCustomer
+
+        TableView<Customer> tableViewCustomer = SC.uniTableView();
+        if (returnRenters(currentRoom.getId()).size() <= currentRoom.getMaxAmountOfCustomers()) {
+            tableViewCustomer.setItems(customers);
+            tableViewCustomer.setBackground(new Background(new BackgroundFill(Color.GRAY, CornerRadii.EMPTY, Insets.EMPTY)));
+        } else {
+            tableViewCustomer.isTableMenuButtonVisible();
+            tableViewCustomer.setItems(customers);
+            //tableViewCustomer.setSelectionModel(null);
+            tableViewCustomer.setBackground(new Background(new BackgroundFill(Color.GRAY, CornerRadii.EMPTY, Insets.EMPTY)));
+            tableViewCustomer.setPlaceholder(SC.uniLabel("This room has no guests... Jet!"));
+        }
+        TableColumn<Customer, Character> tableColumnCustomerName = new TableColumn<>("Available Customers");
+        tableColumnCustomerName.setCellValueFactory(new PropertyValueFactory<>("name"));
+
+        tableViewCustomer.getColumns().addAll(tableColumnCustomerName);
+
+        tableViewCustomer.setOnMouseClicked(e -> {
+            System.out.println("1 Inne i customers");
+
+            if (SC.mouseEventDoubleClick(e)) {
+                System.out.println("2 Inne i customers");
+
+                if (returnRenters(currentRoom.getId()).size() <= currentRoom.getMaxAmountOfCustomers()) {
+                    currentCustomer = tableViewCustomer.getSelectionModel().getSelectedItem();
+                    System.out.println(currentCustomer.getName() + "3 currentCustomer i customers");
+
+
+                    System.out.println("4 utanför for loop customers");
+                    for (Customer customer : returnRenters(currentRoom.getId())) {
+                        System.out.println("4.1 Inne i for loop customers");
+                        if (customer.getId() == currentCustomer.getId()) {
+                            System.out.println("5 Inne i for-loop-if customers");
+                            SC.uniStageAlert(currentCustomer.getName() + " already rents this room!");
+                            return;
+                        }
+                    }
+
+                    //currentSaveSettingsers.add(currentCustomer);
+                    System.out.println("6  customers");
+                    sqlProgram.addCustomerToRoom(currentRoom.getId(), currentCustomer.getId());
+                    //sqlProgram.refreshMethods();
+                    return;
+                }
+
+                System.out.println("7  customers");
+
+                SC.uniStageAlert("This room is fully booked!\n\n" +
+                        "Please choose another room, or remove renting customer(s)!");
+            }
+        });
+
+        //-----------------------------------------------------------------------------------------------
+
+        Label label = new Label();
+        if (currentRoom != null) {
+            label.setText("Welcome to room editing page. Here you can edit rooms, add and remove customers.\n" +
+                    "By double clicking on a customer, you can either add or remove her/him, IF the room isnt full yet.\n\n" +
+                    "Information about this room:\n" +
+                    "City: " + currentRoom.getCity() + "Room size: " + currentRoom.getRoomSize() + "Price/night: " + currentRoom.getPricePerNight() + "\n\n" +
+                    "Facilities and additions: " + "\n" +
+                    "Rent per night: " + "\n");
+
+            System.out.println(currentRoom.getCity() + " currentRoom.getCity()\nfrom menuSettings");
+        }
+
+        //-----------------------------------------------------------------------------------------------
+
+        gridMain.add(gridTop, 0, 0);
+        gridMain.add(gridCenter, 0, 1);
+        gridMain.add(gridBottom, 0, 2);
+
+        gridTop.setAlignment(Pos.CENTER_LEFT);
+        gridTop.add(label, 0, 0);
+        gridTop.add(datePickerBookingFrom, 0, 1);
+        gridTop.add(datePickerBookingTo, 0, 2);
+        gridTop.add(checkBoxExtraBed, 1, 1);
+        gridTop.add(buttonSaveSettings, 1, 2);
+
+        gridCenter.add(tableViewRenter, 0, 0);
+        gridCenter.add(tableViewCustomer, 1, 0);
+
+        // node, columnIndex, rowIndex, columnSpan, rowSpan:
+        gridBottom.add(buttonSceneCancel, 0, 0, 1, 1);
+        gridBottom.add(buttonSceneExit, 1, 0, 1, 1);
+
+        //-----------------------------------------------------------------------------------------------
+
+        Scene scene = SC.uniScene(gridMain);
+        return scene;
     }
 
-    private void roomOptionFacilitiesRestaurant(CheckBox checkBox, TableView tableView) {
+    private Scene menuAddUser() {
 
-        if (checkBox.isSelected()) {
-            System.out.println("1 Rest");
+        GridPane grid = SC.uniGrid();
 
-            if (listWithFilteredRooms.size() > 0) {
-                System.out.println("2 Rest");
-                for (Room room : listWithFilteredRooms) {
-                    if (room.isFacilitiesRestaurant().equalsIgnoreCase("yes")) {
-                        System.out.println("3 Rest");
-                        restaurantFilterSearch.add(room);
-                    }
-                }
+        //-----------------------------------------------------------------------------------------Label
 
-                tableView.setItems(restaurantFilterSearch);
-                gatherAllFilterLists();
-                System.out.println(listWithFilteredRooms.size() + "listWithFilteredRooms rest");
-                return;
+        Label labelUsername = SC.uniLabel("Register/add new user");
+        Label labelMsg = SC.uniLabel("Register/add new user");
+
+        //------------------------------------------------------------------------------------------TextField
+
+        TextField textFieldUsername = new TextField();
+        textFieldUsername.setPromptText("Username");
+
+        //----------------------------------------------------------------------------------------TableView
+
+        TableView<Customer> tableViewCustomer = SC.uniTableView();
+        tableViewCustomer.setItems(getCustomers());
+
+        tableViewCustomer.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
+        TableColumn<Customer, String> tableColumnCustomerName = new TableColumn<>("Name");
+        tableColumnCustomerName.setCellValueFactory(new PropertyValueFactory<>("name"));
+
+        tableViewCustomer.getColumns().addAll(tableColumnCustomerName);
+
+        //------------------------------------------------------------------------------------------Button
+
+        Button buttonAddUser = SC.uniButton("Add user");
+        buttonAddUser.setOnAction(e -> {
+            System.out.println(textFieldUsername.getText());
+            labelMsg.setText(sqlProgram.registerNewCustomer(textFieldUsername.getText()));
+            /*if (!textFieldUsername.getText().isBlank() && textFieldUsername.getText().length() >= 3) {
+                customersNames.add(new Customer(textFieldUsername.getText()));
+            }*/
+            textFieldUsername.clear();
+            tableViewCustomer.refresh();
+        });
+
+        Button buttonCancel = SC.uniButton("Cancel");
+        buttonCancel.setOnAction(e -> stagePrimary.setScene(menuMain()));
+
+        Button buttonExit = SC.uniButton("Exit");
+        buttonExit.setOnAction(e -> stagePrimary.close());
+
+        //-------------------------------------------------------------------------------------------GridPane
+
+        grid.add(labelUsername, 0, 0);
+        grid.add(textFieldUsername, 0, 1);
+        grid.add(labelMsg, 0, 2);
+        grid.add(tableViewCustomer, 0, 3);
+        grid.add(buttonAddUser, 1, 1);
+        grid.add(buttonCancel, 1, 2);
+        grid.add(buttonExit, 1, 3);
+
+        //-----------------------------------------------------------------------------------------------
+
+        Scene scene = SC.uniScene(grid);
+        menuAddCustomerScene = scene;
+        return scene;
+    }
+
+    //-----------------------------------------------------------------------------------------------
+
+    private ObservableList<Customer> returnRenters(int roomId) {
+        ObservableList<Customer> customers = FXCollections.observableArrayList();
+
+        for (Customer customer : this.customers) {
+            if (customer.getRoom() == roomId) {
+                customers.add(customer);
             }
+        }
+        return customers;
+    }
 
-            for (Room room : rooms) {
-                if (room.isFacilitiesRestaurant().equalsIgnoreCase("yes")) {
-                    System.out.println("4 Rest");
-                    restaurantFilterSearch.add(room);
-                }
-            }
+    //-----------------------------------------------------------------------------------------------
 
-            tableView.setItems(restaurantFilterSearch);
-            gatherAllFilterLists();
-            System.out.println(listWithFilteredRooms.size() + "listWithFilteredRooms rest");
+    private void roomOptionDateBookingFrom() {
+        if (dateFrom.toLocalDate().isBefore(dateNow.toLocalDate())) {
+            SC.uniStageAlert("Please pick another date that is FROM TODAY and on...");
             return;
         }
 
+        if (dateFrom.toLocalDate().isEqual(dateNow.toLocalDate()) ||
+                dateFrom.toLocalDate().isAfter(dateNow.toLocalDate())) {
+
+            sqlProgram.updateRoomBookingStart(dateFrom, currentRoom.getId());
+        }
+    }
+
+    private void roomOptionDateBookingTo() {
+
+        if (dateTo.toLocalDate().isBefore(dateNow.toLocalDate())) {
+            SC.uniStageAlert("Please pick another date that is FROM TODAY and on...");
+            return;
+        }
+
+        if (dateTo.toLocalDate().isEqual(dateNow.toLocalDate()) ||
+                dateTo.toLocalDate().isAfter(dateNow.toLocalDate())) {
+
+            sqlProgram.updateRoomBookingEnd(dateTo, currentRoom.getId());
+        }
+    }
+
+    private void roomOptionRating(ComboBox comboBox, TableView tableView) {
+
+        if (optionRatingValue > 0) {
+
+            System.out.println("inne i roomOptionRating");
+            optionRating = true;
+            checkWhichOptionsAreChecked();
+            tableView.setItems(listWithFilteredRooms);
+
+        } else {
+
+            System.out.println("inne i !roomOptionRating");
+            optionRating = false;
+            listWithFilteredRooms = rooms;
+            checkWhichOptionsAreChecked();
+            tableView.setItems(listWithFilteredRooms);
+
+        }
+    }
+
+    private void roomOptionAvailability(CheckBox checkBox, TableView tableView) {
+        if (checkBox.isSelected()) {
+            System.out.println("inne i optionAvailability");
+            optionAvailability = true;
+            checkWhichOptionsAreChecked();
+            tableView.setItems(listWithFilteredRooms);
+        }
+
         if (!checkBox.isSelected()) {
-            System.out.println("5 Rest");
-            SC.resetRoomList(restaurantFilterSearch);
-            gatherAllFilterLists();
-            System.out.println(listWithFilteredRooms.size() + "listWithFilteredRooms rest");
-            onlyOneFilterLeft();
+            System.out.println("inne i !optionAvailability");
+            optionAvailability = false;
+            listWithFilteredRooms = rooms;
+            checkWhichOptionsAreChecked();
+            tableView.setItems(listWithFilteredRooms);
+        }
+    }
 
-            if (listWithFilteredRooms.size() > 0) {
-                System.out.println("6 Rest");
-                tableView.setItems(listWithFilteredRooms);
-                System.out.println(listWithFilteredRooms.size() + "filtersList Rest");
-                return;
-            }
+    private void roomOptionFacilitiesRestaurant(CheckBox checkBox, TableView tableView) {
+        if (checkBox.isSelected()) {
+            System.out.println("inne i roomOptionFacilitiesRestaurant");
+            optionCheckedFacilityRestaurant = true;
+            checkWhichOptionsAreChecked();
+            tableView.setItems(listWithFilteredRooms);
+        }
 
-            tableView.setItems(rooms);
+        if (!checkBox.isSelected()) {
+            System.out.println("inne i !roomOptionFacilitiesRestaurant");
+            optionCheckedFacilityRestaurant = false;
+            listWithFilteredRooms = rooms;
+            checkWhichOptionsAreChecked();
+            tableView.setItems(listWithFilteredRooms);
         }
     }
 
     private void roomOptionFacilitiesPool(CheckBox checkBox, TableView tableView) {
         if (checkBox.isSelected()) {
-            System.out.println("1 Pool");
-
-            if (listWithFilteredRooms.size() > 0) {
-                System.out.println("2 Pool");
-                for (Room room : listWithFilteredRooms) {
-                    if (room.isFacilitiesPool().equalsIgnoreCase("yes")) {
-                        System.out.println("3 Pool");
-                        poolFilterSearch.add(room);
-                    }
-                }
-
-                tableView.setItems(poolFilterSearch);
-                gatherAllFilterLists();
-                System.out.println(listWithFilteredRooms.size() + "listWithFilteredRooms Pool");
-                return;
-            }
-
-            for (Room room : rooms) {
-                if (room.isFacilitiesPool().equalsIgnoreCase("yes")) {
-                    System.out.println("4 Pool");
-                    poolFilterSearch.add(room);
-                }
-            }
-
-            tableView.setItems(poolFilterSearch);
-            gatherAllFilterLists();
-            System.out.println(listWithFilteredRooms.size() + "listWithFilteredRooms Pool");
-            return;
+            System.out.println("inne i roomOptionFacilitiesPool");
+            optionCheckedFacilityPool = true;
+            checkWhichOptionsAreChecked();
+            tableView.setItems(listWithFilteredRooms);
         }
 
         if (!checkBox.isSelected()) {
-            System.out.println("5 Pool");
-            SC.resetRoomList(poolFilterSearch);
-            gatherAllFilterLists();
-            System.out.println(listWithFilteredRooms.size() + "listWithFilteredRooms Pool");
-            onlyOneFilterLeft();
-
-            if (listWithFilteredRooms.size() > 0) {
-                System.out.println("6 Pool");
-                System.out.println(listWithFilteredRooms.size() + "listWithFilteredRooms Pool");
-                tableView.setItems(listWithFilteredRooms);
-                return;
-            }
-
-            tableView.setItems(rooms);
+            System.out.println("inne i !roomOptionFacilitiesPool");
+            optionCheckedFacilityPool = false;
+            listWithFilteredRooms = rooms;
+            checkWhichOptionsAreChecked();
+            tableView.setItems(listWithFilteredRooms);
         }
     }
 
     private void roomOptionFacilitiesChildrenClub(CheckBox checkBox, TableView tableView) {
         if (checkBox.isSelected()) {
-            System.out.println("1");
-
-            if (listWithFilteredRooms.size() > 0) {
-                System.out.println("2");
-                for (Room room : listWithFilteredRooms) {
-                    if (room.isFacilitiesChildrenClub().equalsIgnoreCase("yes")) {
-                        System.out.println("3");
-                        childrenClubFilterSearch.add(room);
-                    }
-                }
-
-                tableView.setItems(childrenClubFilterSearch);
-                gatherAllFilterLists();
-                System.out.println(listWithFilteredRooms.size() + "listWithFilteredRooms chi");
-                return;
-            }
-
-            for (Room room : rooms) {
-                if (room.isFacilitiesChildrenClub().equalsIgnoreCase("yes")) {
-                    System.out.println("4");
-                    childrenClubFilterSearch.add(room);
-                }
-            }
-
-            tableView.setItems(childrenClubFilterSearch);
-            gatherAllFilterLists();
-            System.out.println(listWithFilteredRooms.size() + "listWithFilteredRooms chi");
-            return;
+            System.out.println("inne i roomOptionFacilitiesChildrenClub");
+            optionCheckedFacilityChildrenClub = true;
+            checkWhichOptionsAreChecked();
+            tableView.setItems(listWithFilteredRooms);
         }
 
         if (!checkBox.isSelected()) {
-            System.out.println("5");
-            SC.resetRoomList(childrenClubFilterSearch);
-            gatherAllFilterLists();
-            System.out.println(listWithFilteredRooms.size() + "listWithFilteredRooms chi");
-            //boolFacilityChildrenClubCheckedOut = true;
-            onlyOneFilterLeft();
-
-            if (listWithFilteredRooms.size() > 0) {
-                System.out.println("6");
-                tableView.setItems(listWithFilteredRooms);
-                return;
-            }
-
-            tableView.setItems(rooms);
+            System.out.println("inne i optionCheckedFacilityChildrenClub");
+            optionCheckedFacilityChildrenClub = false;
+            listWithFilteredRooms = rooms;
+            checkWhichOptionsAreChecked();
+            tableView.setItems(listWithFilteredRooms);
         }
     }
 
-    private void roomOptionRoomSize(CheckBox checkBox, TableView tableView) {
+    private void roomOptionFacilitiesEveningEntertainment(CheckBox checkBox, TableView tableView) {
         if (checkBox.isSelected()) {
-
-            if (listWithFilteredRooms.size() > 0) {
-                for (Room room : listWithFilteredRooms) {
-                    if (room.isFacilitiesChildrenClub().equalsIgnoreCase("yes")) {
-                        childrenClubFilterSearch.add(room);
-                    }
-                }
-
-                tableView.setItems(childrenClubFilterSearch);
-                gatherAllFilterLists();
-                return;
-            }
-
-            for (Room room : rooms) {
-                if (room.isFacilitiesChildrenClub().equalsIgnoreCase("yes")) {
-                    childrenClubFilterSearch.add(room);
-                }
-            }
-
-            tableView.setItems(childrenClubFilterSearch);
-            gatherAllFilterLists();
-            return;
+            System.out.println("inne i optionCheckedFacilityEveningEntertainment");
+            optionCheckedFacilityEveningEntertainment = true;
+            checkWhichOptionsAreChecked();
+            tableView.setItems(listWithFilteredRooms);
         }
 
         if (!checkBox.isSelected()) {
-            SC.resetRoomList(childrenClubFilterSearch);
-            gatherAllFilterLists();
+            System.out.println("inne i optionCheckedFacilityEveningEntertainment");
+            optionCheckedFacilityEveningEntertainment = false;
+            listWithFilteredRooms = rooms;
+            checkWhichOptionsAreChecked();
+            tableView.setItems(listWithFilteredRooms);
+        }
+    }
 
-            onlyOneFilterLeft();
+    private void roomOptionAdditionalBoardHalf(CheckBox checkBox, TableView tableView) {
+        if (checkBox.isSelected()) {
+            System.out.println("inne i optionCheckedAddBoardHalf");
+            optionCheckedAddBoardHalf = true;
+            checkWhichOptionsAreChecked();
+            tableView.setItems(listWithFilteredRooms);
+        }
 
-            if (listWithFilteredRooms.size() > 0) {
-                tableView.setItems(listWithFilteredRooms);
-                return;
-            }
+        if (!checkBox.isSelected()) {
+            System.out.println("inne i optionCheckedAddBoardHalf");
+            optionCheckedAddBoardHalf = false;
+            listWithFilteredRooms = rooms;
+            checkWhichOptionsAreChecked();
+            tableView.setItems(listWithFilteredRooms);
+        }
+    }
 
-            tableView.setItems(rooms);
+    private void roomOptionAdditionalBoardFull(CheckBox checkBox, TableView tableView) {
+        if (checkBox.isSelected()) {
+            System.out.println("inne i optionCheckedAddBoardFull");
+            optionCheckedAddBoardFull = true;
+            checkWhichOptionsAreChecked();
+            tableView.setItems(listWithFilteredRooms);
+        }
+
+        if (!checkBox.isSelected()) {
+            System.out.println("inne i optionCheckedAddBoardFull");
+            optionCheckedAddBoardFull = false;
+            listWithFilteredRooms = rooms;
+            checkWhichOptionsAreChecked();
+            tableView.setItems(listWithFilteredRooms);
+        }
+    }
+
+    private void roomOptionAdditionalExtraBed(CheckBox checkBox, TableView tableView) {
+        if (checkBox.isSelected()) {
+            System.out.println("inne i optionCheckedAddExtraBed");
+            optionCheckedAddExtraBed = true;
+            checkWhichOptionsAreChecked();
+            tableView.setItems(listWithFilteredRooms);
+        }
+
+        if (!checkBox.isSelected()) {
+            System.out.println("inne i optionCheckedAddExtraBed");
+            optionCheckedAddExtraBed = false;
+            listWithFilteredRooms = rooms;
+            checkWhichOptionsAreChecked();
+            tableView.setItems(listWithFilteredRooms);
         }
     }
 
     //------------------------------------------------------------------------------------------------------------------
 
-    private void gatherAllFilterLists() {
-        SC.resetRoomList(listWithFilteredRooms);
-        for (Room room : restaurantFilterSearch) {
-            listWithFilteredRooms.add(room);
-        }
-        for (Room room : poolFilterSearch) {
-            listWithFilteredRooms.add(room);
-        }
-        for (Room room : childrenClubFilterSearch) {
-            listWithFilteredRooms.add(room);
-        }
+    private void checkWhichOptionsAreChecked() {
 
-        if (listWithFilteredRooms.size() > 0) {
-
-            if (restaurantFilterSearch.size() > 0) {
-                for (Room room : listWithFilteredRooms) {
-                    if (room.isFacilitiesRestaurant().equalsIgnoreCase("yes")) {
-                        restaurantFilterSearch.add(room);
-                    }
+        if (optionRating == true) {
+            ObservableList<Room> tempList = FXCollections.observableArrayList();
+            listWithFilteredRooms = rooms;
+            for (Room room : listWithFilteredRooms) {
+                if (room.getRating() <= optionRatingValue) {
+                    System.out.println("getRating");
+                    //listWithFilteredRooms.add(room);
+                    tempList.add(room);
+                    //optionAvailability = false;
                 }
             }
-            if (poolFilterSearch.size() > 0) {
-                for (Room room : listWithFilteredRooms) {
-                    if (room.isFacilitiesPool().equalsIgnoreCase("yes")) {
-                        poolFilterSearch.add(room);
-                    }
-                }
-            }
-            if (childrenClubFilterSearch.size() > 0) {
-                for (Room room : listWithFilteredRooms) {
-                    if (room.isFacilitiesRestaurant().equalsIgnoreCase("yes")) {
-                        childrenClubFilterSearch.add(room);
-                    }
-                }
-            }
-
+            listWithFilteredRooms = tempList;
         }
-    }
 
-    private void onlyOneFilterLeft() {
-        //SC.resetRoomList(listWithFilteredRooms);
-        if (restaurantFilterSearch.size() > 0) {
-            SC.resetRoomList(restaurantFilterSearch);
-            for (Room room : rooms) {
+        if (optionAvailability == true) {
+            ObservableList<Room> tempList = FXCollections.observableArrayList();
+            for (Room room : listWithFilteredRooms) {
+                if (room.isAvailability().equalsIgnoreCase("yes")) {
+                    System.out.println("isAvailability");
+                    //listWithFilteredRooms.add(room);
+                    tempList.add(room);
+                    //optionAvailability = false;
+                }
+            }
+            listWithFilteredRooms = tempList;
+        }
+
+        if (optionCheckedFacilityRestaurant == true) {
+            ObservableList<Room> tempList = FXCollections.observableArrayList();
+            for (Room room : listWithFilteredRooms) {
                 if (room.isFacilitiesRestaurant().equalsIgnoreCase("yes")) {
-                    System.out.println("Rest onlyOneFilterLeft");
-                    restaurantFilterSearch.add(room);
+                    System.out.println("isFacilitiesRestaurant");
+                    //listWithFilteredRooms.add(room);
+                    tempList.add(room);
+                    //optionCheckedFacilityRestaurant = false;
                 }
             }
+            listWithFilteredRooms = tempList;
         }
 
-        if (poolFilterSearch.size() > 0) {
-            SC.resetRoomList(poolFilterSearch);
-            for (Room room : rooms) {
+        if (optionCheckedFacilityPool == true) {
+            ObservableList<Room> tempList = FXCollections.observableArrayList();
+            for (Room room : listWithFilteredRooms) {
                 if (room.isFacilitiesPool().equalsIgnoreCase("yes")) {
-                    System.out.println("Pool onlyOneFilterLeft");
-                    poolFilterSearch.add(room);
+                    System.out.println("isFacilitiesPool");
+                    //listWithFilteredRooms.add(room);
+                    tempList.add(room);
+                    //optionCheckedFacilityPool = false;
                 }
             }
+            listWithFilteredRooms = tempList;
         }
 
-        if (childrenClubFilterSearch.size() > 0) {
-            SC.resetRoomList(childrenClubFilterSearch);
-            for (Room room : rooms) {
+        if (optionCheckedFacilityChildrenClub == true) {
+            ObservableList<Room> tempList = FXCollections.observableArrayList();
+            for (Room room : listWithFilteredRooms) {
                 if (room.isFacilitiesChildrenClub().equalsIgnoreCase("yes")) {
-                    System.out.println("ChiCl onlyOneFilterLeft");
-                    childrenClubFilterSearch.add(room);
+                    System.out.println("isFacilitiesChildrenClub");
+                    //listWithFilteredRooms.add(room);
+                    tempList.add(room);
+                    //optionCheckedFacilityChildrenClub = false;
                 }
             }
+            listWithFilteredRooms = tempList;
         }
-        gatherAllFilterLists();
+
+        if (optionCheckedFacilityEveningEntertainment == true) {
+            ObservableList<Room> tempList = FXCollections.observableArrayList();
+            for (Room room : listWithFilteredRooms) {
+                if (room.isFacilitiesEveningEntertainment().equalsIgnoreCase("yes")) {
+                    System.out.println("isFacilitiesEveningEntertainment");
+                    //listWithFilteredRooms.add(room);
+                    tempList.add(room);
+                    //optionCheckedFacilityEveningEntertainment = false;
+                }
+            }
+            listWithFilteredRooms = tempList;
+        }
+
+        if (optionCheckedAddBoardFull == true) {
+            ObservableList<Room> tempList = FXCollections.observableArrayList();
+            for (Room room : listWithFilteredRooms) {
+                if (room.isAdditionalServiceBoardFull().equalsIgnoreCase("yes")) {
+                    System.out.println("optionCheckedAddBoardFull");
+                    //listWithFilteredRooms.add(room);
+                    tempList.add(room);
+                    //optionCheckedAddBoardFull = false;
+                }
+            }
+            listWithFilteredRooms = tempList;
+        }
+
+        if (optionCheckedAddBoardHalf == true) {
+            ObservableList<Room> tempList = FXCollections.observableArrayList();
+            for (Room room : listWithFilteredRooms) {
+                if (room.isAdditionalServiceBoardHalf().equalsIgnoreCase("yes")) {
+                    System.out.println("optionCheckedAddBoardHalf");
+                    //listWithFilteredRooms.add(room);
+                    tempList.add(room);
+                    //optionCheckedAddBoardHalf = false;
+                }
+            }
+            listWithFilteredRooms = tempList;
+        }
+
+        if (optionCheckedAddExtraBed == true) {
+            ObservableList<Room> tempList = FXCollections.observableArrayList();
+            for (Room room : listWithFilteredRooms) {
+                if (room.isAdditionalServiceExtraBed().equalsIgnoreCase("yes")) {
+                    System.out.println("optionCheckedAddExtraBed");
+                    //listWithFilteredRooms.add(room);
+                    tempList.add(room);
+                    //optionCheckedAddExtraBed = false;
+                }
+            }
+            listWithFilteredRooms = tempList;
+        }
+
+
     }
-    /*
-    private void gatherAllFilterLists() {
-        SC.resetRoomList(listWithFilteredRooms);
-        for (Room room : restaurantFilterSearch) {
-            listWithFilteredRooms.add(room);
-        }
-        for (Room room : poolFilterSearch) {
-            listWithFilteredRooms.add(room);
-        }
-        for (Room room : childrenClubFilterSearch) {
-            listWithFilteredRooms.add(room);
-        }
-    }
-
-    private void onlyOneFilterLeft() {
-        //SC.resetRoomList(listWithFilteredRooms);
-        if (restaurantFilterSearch.size() > 0) {
-            SC.resetRoomList(restaurantFilterSearch);
-            for (Room room : rooms) {
-                if (room.isFacilitiesRestaurant()) {
-                    System.out.println("Rest onlyOneFilterLeft");
-                    restaurantFilterSearch.add(room);
-                }
-            }
-        }
-
-        if (poolFilterSearch.size() > 0) {
-            SC.resetRoomList(poolFilterSearch);
-            for (Room room : rooms) {
-                if (room.isFacilitiesPool()) {
-                    System.out.println("Pool onlyOneFilterLeft");
-                    poolFilterSearch.add(room);
-                }
-            }
-        }
-
-        if (childrenClubFilterSearch.size() > 0) {
-            SC.resetRoomList(childrenClubFilterSearch);
-            for (Room room : rooms) {
-                if (room.isFacilitiesChildrenClub()) {
-                    System.out.println("ChiCl onlyOneFilterLeft");
-                    childrenClubFilterSearch.add(room);
-                }
-            }
-        }
-        gatherAllFilterLists();
-    }
-
-    /*
-    private void onlyOneFilterLeft(){
-        //SC.resetRoomList(listWithFilteredRooms);
-        if( restaurantFilterSearch.size() > 0 ) {
-            SC.resetRoomList(restaurantFilterSearch);
-            for (Room room : rooms) {
-                if (room.isFacilitiesRestaurant()) {
-                    System.out.println("Rest onlyOneFilterLeft");
-                    restaurantFilterSearch.add(room);
-                }
-            }
-        }
-
-        if( poolFilterSearch.size() > 0 ) {
-            SC.resetRoomList(poolFilterSearch);
-            for (Room room : rooms) {
-                if (room.isFacilitiesPool()) {
-                    System.out.println("Pool onlyOneFilterLeft");
-                    poolFilterSearch.add(room);
-                }
-            }
-        }
-
-        if( childrenClubFilterSearch.size() > 0 ) {
-            SC.resetRoomList(childrenClubFilterSearch);
-            for (Room room : rooms) {
-                if (room.isFacilitiesChildrenClub()) {
-                    System.out.println("ChiCl onlyOneFilterLeft");
-                    childrenClubFilterSearch.add(room);
-                }
-            }
-        }
-        gatherAllFilterLists();
-    }
-     */
-
-    /*
-    private void gatherAllFilterLists() {
-        SC.resetRoomList(listWithFilteredRooms);
-        for (Room room : restaurantFilterSearch) {
-            listWithFilteredRooms.add(room);
-        }
-        for (Room room : poolFilterSearch) {
-            listWithFilteredRooms.add(room);
-        }
-    }
-
-    private void onlyOneFilterLeft(){
-        //SC.resetRoomList(listWithFilteredRooms);
-        if( restaurantFilterSearch.size() > 0 ) {
-            SC.resetRoomList(restaurantFilterSearch);
-            for (Room room : rooms) {
-                if (room.isFacilitiesRestaurant()) {
-                    System.out.println("Rest onlyOneFilterLeft");
-                    restaurantFilterSearch.add(room);
-                }
-            }
-        }
-
-        if( poolFilterSearch.size() > 0 ) {
-            SC.resetRoomList(poolFilterSearch);
-            for (Room room : rooms) {
-                if (room.isFacilitiesPool()) {
-                    System.out.println("Pool onlyOneFilterLeft");
-                    poolFilterSearch.add(room);
-                }
-            }
-        }
-        gatherAllFilterLists();
-    }
-
-    private void roomOptionFacilitiesRestaurant(CheckBox checkBox, TableView tableView) {
-
-        if (checkBox.isSelected()) {
-            System.out.println("1 Rest");
-
-            if (listWithFilteredRooms.size() > 0) {
-                System.out.println("2 Rest");
-                for (Room room : listWithFilteredRooms) {
-                    if (room.isFacilitiesRestaurant()) {
-                        System.out.println("3 Rest");
-                        restaurantFilterSearch.add(room);
-                    }
-                }
-
-                tableView.setItems(restaurantFilterSearch);
-                gatherAllFilterLists();
-                return;
-            }
-
-            for (Room room : rooms) {
-                if (room.isFacilitiesRestaurant()) {
-                    System.out.println("4 Rest");
-                    restaurantFilterSearch.add(room);
-                }
-            }
-            tableView.setItems(restaurantFilterSearch);
-            gatherAllFilterLists();
-            return;
-        }
-
-        if (!checkBox.isSelected()) {
-            System.out.println("5 Rest");
-            SC.resetRoomList(restaurantFilterSearch);
-            gatherAllFilterLists();
-
-            onlyOneFilterLeft();
-
-            if (listWithFilteredRooms.size() > 0) {
-                System.out.println(listWithFilteredRooms.size() + "filtersList Rest");
-                System.out.println("6 Rest");
-                tableView.setItems(listWithFilteredRooms);
-                return;
-            }
-
-            tableView.setItems(rooms);
-        }
-    }
-
-    private void roomOptionFacilitiesPool(CheckBox checkBox, TableView tableView) {
-        if (checkBox.isSelected()) {
-            System.out.println("1 Pool");
-
-            if (listWithFilteredRooms.size() > 0) {
-                System.out.println("2 Pool");
-                for (Room room : listWithFilteredRooms) {
-                    if (room.isFacilitiesPool()) {
-                        System.out.println("3 Pool");
-                        poolFilterSearch.add(room);
-                    }
-                }
-
-                tableView.setItems(poolFilterSearch);
-                gatherAllFilterLists();
-                return;
-            }
-
-            for (Room room : rooms) {
-                if (room.isFacilitiesPool()) {
-                    System.out.println("4 Pool");
-                    poolFilterSearch.add(room);
-                }
-            }
-
-            tableView.setItems(poolFilterSearch);
-            gatherAllFilterLists();
-            return;
-        }
-
-        if (!checkBox.isSelected()) {
-            System.out.println("5 Pool");
-            SC.resetRoomList(poolFilterSearch);
-            gatherAllFilterLists();
-
-            onlyOneFilterLeft();
-
-            if (listWithFilteredRooms.size() > 0) {
-                System.out.println("6 Pool");
-                tableView.setItems(listWithFilteredRooms);
-                return;
-            }
-
-            tableView.setItems(rooms);
-        }
-    }
-     */
 
     //------------------------------------------------------------------------------------------------------------------
-
-    private void deleteOnCheckBox() {
-        ObservableList<Room> checkedFacility, allRooms;
-        allRooms = getRooms();
-        //checkedFacility = tableViewRoom.getSelectionModel().getSelectedItems();
-        //checkedFacility.forEach( allRooms :: remove );
-            /*if( checkBoxFacilitiesRestaurant.isSelected() ) {
-            tableViewRoom.getItems().removeAll( rooms );
-            }
-        while (!rooms.get(1).isFacilitiesRestaurant()) {
-            rooms.remove(rooms.get(1));
-            System.out.println("not available!");
-            return;
-        }
-        System.out.println("available!");*/
-    }
-
-    private BorderPane menuCancelRoom() {
-        Stage stage = SC.uniStageMain("Add User");
-        BorderPane borderPane = new BorderPane();
-        HBox hBox = new HBox();
-        VBox vBox = new VBox();
-        Scene scene = new Scene(borderPane);
-        Button vButtonAddUser = SC.uniButton("Add user");
-        Button vButtonExit = SC.buttonCloseCurrentWindow(stage, "EXIT", 50, 50);
-        TextField addNameField = new TextField();
-        ImageView image = SC.imageCover("hotel");
-
-        image.setFitWidth(640);
-        image.setFitHeight(100);
-        image.setPreserveRatio(true);
-        image.setSmooth(true);
-        image.setCache(true);
-
-        hBox.setAlignment(Pos.CENTER);
-        hBox.getChildren().addAll(image);
-        vBox.getChildren().addAll(vButtonAddUser, vButtonExit);
-
-        borderPane.setTop(hBox);
-        borderPane.setLeft(vBox);
-
-        scene.setFill(Color.BLACK);
-
-        stage.setScene(scene);
-        stage.show();
-        return borderPane;
-    }
 
     private ObservableList<Customer> getCustomers() {
         ObservableList<Customer> customers = FXCollections.observableArrayList();
@@ -1068,32 +902,19 @@ public class Program extends Application {
         return customers;
     }
 
-    private ObservableList<Room> getRooms() {
+    private void getRooms() {
         ObservableList<Room> rooms = FXCollections.observableArrayList();
-        for (Room r : sqlProgram.getRooms()) {
+        for (Room room : sqlProgram.getRooms()) {
             rooms.add(new Room(
-                    r.getId(), r.getCity(), r.getRoomSize(), r.getBookingStart(), r.getBookingEnd(), r.getMaxAmountOfCustomers(), returnTrueIfYesFalseIfNo(r.isFacilitiesRestaurant()),
-                    returnTrueIfYesFalseIfNo(r.isFacilitiesPool()), returnTrueIfYesFalseIfNo(r.isFacilitiesEveningEntertainment()), returnTrueIfYesFalseIfNo(r.isFacilitiesChildrenClub()), returnTrueIfYesFalseIfNo(r.isAdditionalServiceBoardHalf()),
-                    returnTrueIfYesFalseIfNo(r.isAdditionalServiceBoardFull()), returnTrueIfYesFalseIfNo(r.isAdditionalServiceExtraBed()), r.getPricePerNight(), r.getRating(), returnTrueIfYesFalseIfNo(r.isAvailability())
+                    room.getId(), room.getCity(), room.getRoomSize(), room.getBookingStart(), room.getBookingEnd(), room.getMaxAmountOfCustomers(), returnTrueIfYesFalseIfNo(room.isFacilitiesRestaurant()),
+                    returnTrueIfYesFalseIfNo(room.isFacilitiesPool()), returnTrueIfYesFalseIfNo(room.isFacilitiesEveningEntertainment()), returnTrueIfYesFalseIfNo(room.isFacilitiesChildrenClub()), returnTrueIfYesFalseIfNo(room.isAdditionalServiceBoardHalf()),
+                    returnTrueIfYesFalseIfNo(room.isAdditionalServiceBoardFull()), returnTrueIfYesFalseIfNo(room.isAdditionalServiceExtraBed()), room.getPricePerNight(), room.getRating(), returnTrueIfYesFalseIfNo(room.isAvailability())
             ));
         }
         this.rooms = rooms;
-        return rooms;
     }
-    /*
-    private ObservableList<Room> getRooms() {
-        ObservableList<Room> rooms = FXCollections.observableArrayList();
-        for (Room r : sqlProgram.getRooms()) {
-            rooms.add(new Room(
-                    r.getCity(), r.getRoomSize(), r.getBookingStart(), r.getBookingEnd(), r.getMaxAmountOfCustomers(), r.isFacilitiesRestaurant(),
-                    r.isFacilitiesPool(), r.isFacilitiesEveningEntertainment(), r.isFacilitiesChildrenClub(), r.isAdditionalServiceBoardHalf(),
-                    r.isAdditionalServiceBoardFull(), r.isAdditionalServiceExtraBed(), r.getPricePerNight(), r.getRating(), r.isAvailability()
-            ));
-        }
-        this.rooms = rooms;
-        return rooms;
-    }
-     */
+
+    //------------------------------------------------------------------------------------------------------------------
 
     private boolean returnTrueIfYesFalseIfNo(String str) {
         if (str.equalsIgnoreCase("yes")) {
@@ -1102,8 +923,13 @@ public class Program extends Application {
         return false;
     }
 
+    //------------------------------------------------------------------------------------------------------------------
+
     public void stop() throws Exception {
     }
+
+    //------------------------------------------------------------------------------------------------------------------
+
 
     /*
     private void roomOptionFacilitiesRestaurant(CheckBox checkBox, TableView tableView) {
@@ -1149,6 +975,15 @@ public class Program extends Application {
             tableView.setItems(rooms);
         }
     }
+    }*/
+
+    /*private void miscMethods(){
+        ObservableList<Room> newList =
+                rooms.stream()
+                        .filter(x -> x.isFacilitiesRestaurant().equals("Yes"))
+                        .collect(Collectors.collectingAndThen(toList(), l -> FXCollections.observableArrayList(l)));
+
+        tableView.setItems(newList);
     }*/
 
 }
