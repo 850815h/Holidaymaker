@@ -7,6 +7,7 @@ import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.TableView;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseButton;
@@ -26,16 +27,40 @@ import java.io.FileNotFoundException;
 public class SC extends Application {
     private static final int STAGE_MIN_WIDTH = 640;
     private static final int STAGE_MIN_HEIGHT = 480;
-    private static final int STAGE_MAX_WIDTH = 1200;
-    private static final int STAGE_MAX_HEIGHT = 900;
-    private static final int BUTTON_MIN_WIDTH = 30;
-    private static final int BUTTON_MIN_HEIGHT = 20;
-    private static final int BUTTON_MAX_WIDTH = 120;
-    private static final int BUTTON_MAX_HEIGHT = 100;
+    private static final int STAGE_MAX_WIDTH = 640;
+    private static final int STAGE_MAX_HEIGHT = 480;
+    private static final int BUTTON_MIN_WIDTH = 50;
+    private static final int BUTTON_MIN_HEIGHT = 30;
+    private static final int BUTTON_MAX_WIDTH = 1200;
+    private static final int BUTTON_MAX_HEIGHT = 1000;
+    private static final int TABLEVIEW_MIN_WIDTH = 30;
+    private static final int TABLEVIEW_MIN_HEIGHT = 20;
+    private static final int TABLEVIEW_MAX_WIDTH = 1000;
+    private static final int TABLEVIEW_MAX_HEIGHT = 900;
     //private static boolean exit = false;
 
+    //************************************************************************************************* TableView
+
+    public static TableView uniTableView() {
+        TableView tableView = new TableView();
+
+        //tableView.setPrefWidth(999);
+
+        tableView.setMinWidth(TABLEVIEW_MIN_WIDTH);
+        tableView.setMinHeight(TABLEVIEW_MIN_HEIGHT);
+        tableView.setMaxWidth(TABLEVIEW_MAX_WIDTH);
+        tableView.setMaxHeight(TABLEVIEW_MAX_HEIGHT);
+
+        //tableView.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
+        //tableViewRoom.setPadding(new Insets(10, 10, 10, 10));
+
+
+        return tableView;
+    }
+
     //*** GRID *********************************************************************************************************
-    public static GridPane uniGrid(){
+
+    public static GridPane uniGrid() {
         GridPane grid = new GridPane();
         grid.setPadding(new Insets(10, 10, 10, 10));
         grid.setAlignment(Pos.CENTER);
@@ -43,8 +68,6 @@ public class SC extends Application {
         grid.setVgap(10);
         return grid;
     }
-
-
 
     //*** STAGE ********************************************************************************************************
 
@@ -95,7 +118,7 @@ public class SC extends Application {
 
         hBox.setAlignment(Pos.CENTER);
         uniLabel("Are you sure you want to exit?");
-        hBox.getChildren().addAll( buttonYes, buttonNo);
+        hBox.getChildren().addAll(buttonYes, buttonNo);
 
         stage.setScene(scene);
         stage.show();
@@ -120,11 +143,11 @@ public class SC extends Application {
     public static Stage uniStageMain(String title /*, int width, int height*/) {
         Stage stage = new Stage();
 
-        stage.setTitle(title);
+        /*stage.setTitle(title);
         stage.setWidth(STAGE_MIN_WIDTH);
         stage.setHeight(STAGE_MIN_HEIGHT);
         stage.setMaxWidth(STAGE_MAX_WIDTH);
-        stage.setMaxHeight(STAGE_MAX_HEIGHT);
+        stage.setMaxHeight(STAGE_MAX_HEIGHT);*/
 
         stage.initStyle(StageStyle.TRANSPARENT);
 
@@ -147,19 +170,36 @@ public class SC extends Application {
         return stage;
     }
 
-    public static Stage uniStageAlert(String title /*, int width, int height*/) {
+    public static Stage uniStageAlert(String msg /*, int width, int height*/) {
         Stage stage = new Stage();
+        GridPane grid = new GridPane();
+        Scene scene = new Scene(grid);
 
-        stage.setTitle(title);
-        stage.setWidth(STAGE_MIN_WIDTH);
-        stage.setHeight(STAGE_MIN_HEIGHT);
-        stage.setMaxWidth(STAGE_MAX_WIDTH);
-        stage.setMaxHeight(STAGE_MAX_HEIGHT);
-
+        stage.initModality(Modality.APPLICATION_MODAL);
         stage.initStyle(StageStyle.TRANSPARENT);
 
+        Label label = uniLabel("");
 
-        //window.show();
+
+        grid.setPadding(new Insets(20, 20, 20, 20));
+        grid.setAlignment(Pos.CENTER);
+        grid.setHgap(10);
+        grid.setVgap(10);
+
+        stage.setTitle(msg);
+        stage.setMinWidth(222);
+        stage.setMinHeight(111);
+        stage.setMaxWidth(555);
+        stage.setMaxHeight(444);
+
+        Button buttonOk = uniButton(msg);
+        buttonOk.setOnAction(e -> stage.close());
+
+        grid.add(label, 1, 0);
+        grid.add(buttonOk, 1, 2);
+
+        stage.setScene(scene);
+        stage.show();
         return stage;
     }
 
@@ -202,6 +242,46 @@ public class SC extends Application {
     }
      */
 
+    public static Boolean buttonConfirm(String msg) {
+        Stage stage = new Stage();
+        GridPane grid = new GridPane();
+        Scene scene = new Scene(grid);
+
+        stage.initModality(Modality.APPLICATION_MODAL);
+        stage.initStyle(StageStyle.TRANSPARENT);
+
+        Label label = uniLabel(msg);
+
+        grid.setPadding(new Insets(20, 20, 20, 20));
+        grid.setAlignment(Pos.CENTER);
+        grid.setHgap(10);
+        grid.setVgap(10);
+
+        stage.setWidth(222);
+        stage.setHeight(100);
+        stage.setMaxWidth(222);
+        stage.setMaxHeight(100);
+
+        Button buttonYes = uniButton("Yes", 55, 33);
+        buttonYes.setOnAction(e -> {
+            stage.close();
+            //return true;
+        });
+
+        Button buttonNo = uniButton("No", 55, 33);
+        buttonNo.setOnAction(e -> {
+            stage.close();
+            //return false;
+        });
+
+        grid.add(buttonYes, 1, 1);
+        grid.add(buttonNo, 1, 3);
+
+        stage.setScene(scene);
+        stage.show();
+        return false;
+    }
+
     public static Button uniButton(String txt, int width, int height /*, int posX, int posY */) {
         /*
         button.setStyle("-fx-border-color: #ff0000; -fx-border-width: 5px;");
@@ -217,18 +297,17 @@ public class SC extends Application {
     }
 
     public static Button uniButton(String txt) {
-        /*
-        button.setStyle("-fx-border-color: #ff0000; -fx-border-width: 5px;");
-        buttonYes.setStyle("-fx-background-color: #00ff00");
-        buttonNo.setStyle("-fx-font-size: 2em; ");
-        button1.setStyle("-fx-text-fill: #0000ff");
-         */
         Button button = new Button(txt);
 
+        button.setStyle("-fx-border-color: #ff0000; -fx-border-width: 5px;");
+        button.setStyle("-fx-background-color: #00ff00");
+        button.setStyle("-fx-font-size: 2em; ");
+        button.setStyle("-fx-text-fill: #0000ff");
         //button.setStyle(" -fx-stroke-width: 5");
+
         //button.setPadding( new Insets( 10, 44, 10, 44 ));
-        button.setWrapText( true );
-        button.setTextAlignment( TextAlignment.CENTER );
+        button.setWrapText(true);
+        button.setTextAlignment(TextAlignment.CENTER);
         button.setMinWidth(BUTTON_MIN_WIDTH);
         button.setMinHeight(BUTTON_MIN_HEIGHT);
         button.setMaxWidth(BUTTON_MAX_WIDTH);
@@ -247,9 +326,9 @@ public class SC extends Application {
 
     //** SCEN **********************************************************************************************************
 
-    public static Scene uniScene(VBox vBox) {
-        Scene scene = new Scene(vBox);
-
+    public static Scene uniScene(GridPane grid) {
+        //uniScene(GridPane grid, int i, int j)
+        Scene scene = new Scene(grid, 800, 600);
         return scene;
     }
 
@@ -320,25 +399,29 @@ public class SC extends Application {
 
     //** MISC. *********************************************************************************************************
 
-    public static void resetRoomList(ObservableList<Room> roomList ){
+    public static void resetRoomList(ObservableList<Room> roomList) {
         while (roomList.size() > 0) {
             roomList.remove(0);
         }
     }
 
-    //** MISC. *********************************************************************************************************
-
-    public static boolean mouseEventDoubleClick(MouseEvent mouseEvent){
-            if(mouseEvent.getButton().equals(MouseButton.PRIMARY)){
-                if(mouseEvent.getClickCount() == 2){
-                    System.out.println("Double clicked");
-                    return true;
-                }
-            }
-            return false;
+    public static void resetCustomerList(ObservableList<Customer> roomList) {
+        while (roomList.size() > 0) {
+            roomList.remove(0);
+        }
     }
 
+    //** MouseClick. *********************************************************************************************************
 
+    public static boolean mouseEventDoubleClick(MouseEvent mouseEvent) {
+        if (mouseEvent.getButton().equals(MouseButton.PRIMARY)) {
+            if (mouseEvent.getClickCount() == 2) {
+                System.out.println("Double clicked");
+                return true;
+            }
+        }
+        return false;
+    }
 
 
 }
