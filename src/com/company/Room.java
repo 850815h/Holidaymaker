@@ -20,12 +20,15 @@ public class Room {
     private boolean additionalServiceExtraBed;
     private double pricePerNight;
     private double rating;
+    private double distanceToCity;
+    private double distanceToBeach;
     private boolean availability;
 
     public Room(int id, String city, int roomSize, Date bookingStart, Date bookingEnd, int maxAmountOfCustomers,
                 boolean facilitiesRestaurant, boolean facilitiesPool, boolean facilitiesEveningEntertainment,
                 boolean facilitiesChildrenClub, boolean additionalServiceBoardHalf, boolean additionalServiceBoardFull,
-                boolean additionalServiceExtraBed, double pricePerNight, double rating, boolean availability) {
+                boolean additionalServiceExtraBed, double pricePerNight, double rating,
+                double distanceToCity, double distanceToBeach, boolean availability) {
         this.id = id;
         this.city = city;
         this.roomSize = roomSize;
@@ -41,7 +44,25 @@ public class Room {
         this.additionalServiceExtraBed = additionalServiceExtraBed;
         this.pricePerNight = pricePerNight;
         this.rating = rating;
+        this.distanceToCity = distanceToCity;
+        this.distanceToBeach = distanceToBeach;
         this.availability = availability;
+    }
+
+    public double getDistanceToCity() {
+        return distanceToCity;
+    }
+
+    public void setDistanceToCity(double distanceToCity) {
+        this.distanceToCity = distanceToCity;
+    }
+
+    public double getDistanceToBeach() {
+        return distanceToBeach;
+    }
+
+    public void setDistanceToBeach(double distanceToBeach) {
+        this.distanceToBeach = distanceToBeach;
     }
 
     public int getId() {
@@ -94,9 +115,9 @@ public class Room {
 
     public String isFacilitiesRestaurant() {
         if( facilitiesRestaurant ){
-            return "Yes";
+            return "Available";
         }
-        return "No";
+        return "Not available";
     }
     /*public boolean isFacilitiesRestaurant() {
         return facilitiesRestaurant;
@@ -108,9 +129,9 @@ public class Room {
 
     public String isFacilitiesPool() {
         if( facilitiesPool ){
-            return "Yes";
+            return "Available";
         }
-        return "No";
+        return "Not available";
     }
 
     public void setFacilitiesPool(boolean facilitiesPool) {
@@ -119,9 +140,9 @@ public class Room {
 
     public String isFacilitiesEveningEntertainment() {
         if( facilitiesEveningEntertainment ){
-            return "Yes";
+            return "Available";
         }
-        return "No";
+        return "Not available";
     }
 
     public void setFacilitiesEveningEntertainment(boolean facilitiesEveningEntertainment) {
@@ -130,9 +151,9 @@ public class Room {
 
     public String isFacilitiesChildrenClub() {
         if( facilitiesChildrenClub ){
-            return "Yes";
+            return "Available";
         }
-        return "No";
+        return "Not available";
 
     }
 
@@ -142,9 +163,9 @@ public class Room {
 
     public String isAdditionalServiceBoardHalf() {
         if( additionalServiceBoardHalf ){
-            return "Yes";
+            return "Available";
         }
-        return "No";
+        return "Not available";
     }
 
     public void setAdditionalServiceBoardHalf(boolean additionalServiceBoardHalf) {
@@ -153,9 +174,9 @@ public class Room {
 
     public String isAdditionalServiceBoardFull() {
         if( additionalServiceBoardFull ){
-            return "Yes";
+            return "Available";
         }
-        return "No";
+        return "Not available";
     }
 
     public void setAdditionalServiceBoardFull(boolean additionalServiceBoardFull) {
@@ -164,9 +185,9 @@ public class Room {
 
     public String isAdditionalServiceExtraBed() {
         if( additionalServiceExtraBed ){
-            return "Yes";
+            return "Available";
         }
-        return "No";
+        return "Not available";
     }
 
     public void setAdditionalServiceExtraBed(boolean additionalServiceExtraBed) {
@@ -191,9 +212,9 @@ public class Room {
 
     public String isAvailability() {
         if( availability ){
-            return "Yes";
+            return "Available";
         }
-        return "No";
+        return "Not available";
     }
 
     public void setAvailability(boolean availability) {

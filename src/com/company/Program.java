@@ -11,38 +11,42 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
+import javafx.util.StringConverter;
 
 import java.sql.Date;
+import java.text.DecimalFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.Scanner;
 
 public class Program extends Application {
     private SQLProgram sqlProgram = new SQLProgram();
-    private ObservableList<Customer> customersNames = FXCollections.observableArrayList();
-    private ObservableList<Room> rooms = FXCollections.observableArrayList();
     private ObservableList<Customer> customers = FXCollections.observableArrayList();
+    private ObservableList<Customer> tempCustomers = FXCollections.observableArrayList();
+    private ObservableList<Room> rooms = FXCollections.observableArrayList();
     private ObservableList<Room> listWithFilteredRooms = FXCollections.observableArrayList();
     private Room currentRoom = null;
     private Customer currentCustomer = null;
 
-    private Scene menuMainScene;
-    private Scene menuRoomScene;
-    private Scene menuRoomSettingsScene;
-    private Scene menuAddCustomerScene;
     private Stage stagePrimary;
+    private Stage stageWindow;
 
     private LocalDate localDate = LocalDate.now();
     private Date dateNow = Date.valueOf(localDate);
     private Date dateTomorrow = dateNow;
+    //private Date dateTomorrow = currentRoom.getBookingEnd();
     private Date dateFrom = dateNow;
     private Date dateTo = dateNow;
 
+    private Boolean boolSettingsChangedButNoSaved = false;
     private Boolean stageActive = false;
-    private Boolean optionRating = false, optionAvailability = false, optionCheckedFacilityRestaurant = false, optionCheckedFacilityPool = false,
+    private Boolean optionDistanceToCity = false, optionDistanceToBeach = false, optionRating = false, optionAvailability = false, optionCheckedFacilityRestaurant = false, optionCheckedFacilityPool = false,
             optionCheckedFacilityEveningEntertainment = false, optionCheckedFacilityChildrenClub = false,
             optionCheckedAddBoardFull = false, optionCheckedAddBoardHalf = false, optionCheckedAddExtraBed = false;
     private int optionRatingValue = 0;
+
+    private DecimalFormat df2 = new DecimalFormat("#.##");
+    private double distanceToCity = 0;
+    private double distanceToBeach = 0;
 
 
     public void init(Stage stage) throws Exception {
@@ -51,91 +55,27 @@ public class Program extends Application {
     //-----------------------------------------------------------------------------------------------
 
     public void start(Stage stage) throws Exception {
-        aaaTempRoom();
-        ///////////////////////////////////////////
         getRooms();
         getCustomers();
-        menuAddUser();
-        menuRoom();
-        menuRoomChangeRoomSettings();
+        aaaTempRoom();
         ///////////////////////////////////////////
-
-        //System.out.println(currentRoom.size() + " CurrentRoom Size");
-        //stageStage();
-        //stageWindow(menuRoom());
-        //stageWindow(sceneRoomSettings);
-        //mainStage();
-        //System.out.println("----------------");
+        ///////////////////////////////////////////
 
         mainStage(menuMain());
     }
 
     //-----------------------------------------------------------------------------------------------
 
-    private void aaaa() {
-        String[] letters = {"Faris", "Erik", "Nils", "Victor", "Patrik", "Jim", "Tobbe", "Mantas", "Shala", "Matthias", "Helena",
-                "Sebbe", "Tobias", "Alberts", "Sandra", "Anna", "Lisa", "Johan W", "Benjamin", "Ammar", "Aling", "Soue", "Chang", "Arnold", "Sture", "Hamid", "Shoa", "Annie", "Stao", "Kurre", "Ammar"};
-        /*Arrays.stream(letters)
-                .filter( x -> x.toLowerCase().startsWith("a"))
-                .filter( x -> x.toLowerCase().contains("n"))
-                .forEach(System.out::println);*/
-
-
-    }
-
     private void aaaTempRoom() {
-        currentRoom = new Room(1, "Malmö", 19, dateNow, dateTomorrow, 4,
+        currentRoom = new Room(1, "Malmö", 19, dateNow, sqlProgram.getRooms().get(8).getBookingEnd(), 6,
                 true, true, true, true,
                 true, true, true,
-                12, 9, true);
-    }
+                12, 9, 12, 4, false);
 
-    private void stageStage() {
-        //Stage stage = SC.uniStageMain("TEST STAGE");
-        Stage stage = new Stage();
-        stage.setTitle("stageStage");
-        GridPane grid = SC.uniGrid();
-        Scene scene = new Scene(grid);
-
-        Button buttonExit = SC.uniButton("Exit");
-        buttonExit.setOnAction(e -> stage.close());
-
-        DatePicker datePicker = new DatePicker();
-        datePicker.setPromptText(dateNow.toString());
-        datePicker.setOnAction(e -> {
-            System.out.println(dateNow.toLocalDate() + " dateNow");
-            System.out.println(datePicker.getValue() + " datePicker.getValue()");
-            dateTomorrow = Date.valueOf(datePicker.getValue());
-            if (dateTomorrow.toLocalDate().isBefore(dateNow.toLocalDate())) {
-                System.out.println("Välj annat datum, senare än idag eller samma");
-            }
-            System.out.println(dateTomorrow + " dateTomorrow");
-        });
-
-
-        grid.add(buttonExit, 0, 0);
-        grid.add(datePicker, 0, 1);
-
-        stage.setScene(scene);
-        stage.show();
-    }
-
-    private void stageWindow(Scene newScene) {
-        Stage stage = SC.uniStageMain("TEST STAGE");
-        //Stage stage = new Stage();
-        GridPane grid = new GridPane();
-        Scene scene = newScene;
-
-        grid.setPadding(new Insets(10, 10, 10, 10));
-
-        DatePicker datePicker = new DatePicker();
-
-
-        grid.add(datePicker, 0, 0);
-
-        stage.setScene(scene);
-        stage.show();
-        //stageWindow = stage;
+        tempCustomers.add(new Customer(1, "Erik", 1));
+        tempCustomers.add(new Customer(2, "Faris", 1));
+        tempCustomers.add(new Customer(3, "Ommah", 1));
+        tempCustomers.add(new Customer(4, "Sosi", 1));
     }
 
     //-----------------------------------------------------------------------------------------------
@@ -164,7 +104,7 @@ public class Program extends Application {
         Button buttonAddUser = SC.uniButton("Add User");
         buttonAddUser.setOnAction(e -> {
             //stagePrimary.setScene(menuAddUser());
-            mainStageTest( menuAddUser());
+            mainStageTest(menuAddUser());
         });
 
         Button buttonRoomBooking = SC.uniButton("Rooms\nBooking\nCancellation");
@@ -186,10 +126,6 @@ public class Program extends Application {
     private Scene menuRoom() {
         listWithFilteredRooms = rooms;
 
-        /*GridPane gridMain = SC.uniGrid();
-        GridPane gridTop = SC.uniGrid();
-        GridPane gridCenter = SC.uniGrid();
-        GridPane gridBottom = SC.uniGrid();*/
         GridPane gridMain = SC.uniGrid();
         GridPane gridTop = SC.uniGrid();
         GridPane gridCenter = SC.uniGrid();
@@ -247,6 +183,12 @@ public class Program extends Application {
         //Rooms rating
         TableColumn<Room, Double> tableColumnRating = new TableColumn("Rating");
         tableColumnRating.setCellValueFactory(new PropertyValueFactory<>("rating"));
+        //Distance To city
+        TableColumn<Room, Double> tableColumnDistanceToCity = new TableColumn("Distance To\nCity");
+        tableColumnDistanceToCity.setCellValueFactory(new PropertyValueFactory<>("distanceToCity"));
+        ///Distance To beach
+        TableColumn<Room, Double> tableColumnDistanceToBeach = new TableColumn("Distance To\nBeach");
+        tableColumnDistanceToBeach.setCellValueFactory(new PropertyValueFactory<>("distanceToBeach"));
         //Rooms Availability
         TableColumn<Room, Boolean> tableColumnAvailability = new TableColumn("Available");
         tableColumnAvailability.setCellValueFactory(new PropertyValueFactory<>("availability"));
@@ -254,7 +196,7 @@ public class Program extends Application {
         tableViewRoom.getColumns().addAll(tableColumnCity, tableColumnRoomSize, tableColumnBookingStart, tableColumnBookingEnd,
                 tableColumnMaxAmountOfCustomers, tableColumnFacilitiesRestaurant, tableColumnFacilitiesPool, tableColumnFacilitiesEveningEntertainment,
                 tableColumnFacilitiesChildrenClub, tableColumnAdditionalServiceBoardHalf, tableColumnAdditionalServiceBoardFull,
-                tableColumnAdditionalServiceExtraBed, tableColumnPricePerNight, tableColumnRating, tableColumnAvailability);
+                tableColumnAdditionalServiceExtraBed, tableColumnPricePerNight, tableColumnRating, tableColumnDistanceToCity, tableColumnDistanceToBeach, tableColumnAvailability);
 
         //---------------------------------------------------------------------------------------------CheckBox
 
@@ -306,26 +248,63 @@ public class Program extends Application {
             }
         });
 
+
+        //------------------------------------------------------------------------------------------Slider
+
+        Slider sliderDistanceToCity = SC.uniSlider(0, 20, 0, 1);
+        sliderDistanceToCity.setOnDragDetected(e -> {
+            distanceToCity = sliderDistanceToCity.getValue();
+            roomOptionDistanceToCity(tableViewRoom);
+        });
+
+        sliderDistanceToCity.setOnMouseClicked(e -> {
+            distanceToCity = sliderDistanceToCity.getValue();
+            roomOptionDistanceToCity(tableViewRoom);
+        });
+
+        Slider sliderDistanceToBeach = SC.uniSlider(0, 20, 0, 1);
+        sliderDistanceToBeach.setOnDragDetected(e -> {
+            distanceToBeach = sliderDistanceToBeach.getValue();
+            roomOptionDistanceToBeach(tableViewRoom);
+        });
+
+        sliderDistanceToBeach.setOnMouseClicked(e -> {
+            distanceToBeach = sliderDistanceToBeach.getValue();
+            roomOptionDistanceToBeach(tableViewRoom);
+        });
+
         //-----------------------------------------------------------------------------------------------
+
+        Label labelDistanceToCity = SC.uniLabel("Distance to city in km");
+        Label labelDistanceToBeach = SC.uniLabel("Distance to beach in km");
+
+        //-----------------------------------------------------------------------------------------------
+
 
         gridMain.add(gridTop, 0, 0);
         gridMain.add(gridCenter, 0, 1);
         gridMain.add(gridBottom, 0, 2);
 
         gridTop.add(checkBoxAvailability, 0, 0);
-        gridTop.add(checkBoxFacilitiesRestaurant, 1, 0);
-        gridTop.add(checkBoxFacilitiesPool, 2, 0);
-        gridTop.add(checkBoxFacilitiesChildrenClub, 3, 0);
-        gridTop.add(checkBoxFacilitiesEveningEntertainment, 4, 0);
-        gridTop.add(checkBoxAdditionalBoardHalf, 0, 1);
-        gridTop.add(checkBoxAdditionalBoardFull, 1, 1);
-        gridTop.add(checkBoxAdditionalExtraBed, 2, 1);
-        gridTop.add(comboBoxRating, 3, 1);
+        gridTop.add(labelDistanceToCity, 1, 0);
+        gridTop.add(labelDistanceToBeach, 2, 0);
+        gridTop.add(checkBoxFacilitiesRestaurant, 3, 0);
+
+        gridTop.add(comboBoxRating, 0, 1);
+        gridTop.add(sliderDistanceToCity, 1, 1);
+        gridTop.add(sliderDistanceToBeach, 2, 1);
+        gridTop.add(checkBoxFacilitiesPool, 3, 1);
+
+        gridTop.add(checkBoxFacilitiesChildrenClub, 0, 2);
+        gridTop.add(checkBoxFacilitiesEveningEntertainment, 1, 2);
+        gridTop.add(checkBoxAdditionalBoardHalf, 2, 2);
+        gridTop.add(checkBoxAdditionalBoardFull, 3, 2);
+        gridTop.add(checkBoxAdditionalExtraBed, 4, 2);
 
         gridCenter.add(tableViewRoom, 0, 1);
 
         gridBottom.add(buttonCancel, 0, 0);
-        gridBottom.add(buttonExit, 0, 1);
+        gridBottom.add(buttonExit, 1, 0);
 
         //------------------------------------------------------------------------------------------return
 
@@ -334,6 +313,8 @@ public class Program extends Application {
     }
 
     private Scene menuRoomChangeRoomSettings() {
+        customers = getCustomers();
+
         GridPane gridMain = SC.uniGrid();
         GridPane gridTop = SC.uniGrid();
         GridPane gridCenter = SC.uniGrid();
@@ -341,122 +322,170 @@ public class Program extends Application {
 
         //--------------------------------------------------------------------------------------------CheckBox
 
+        CheckBox checkBoxHalfBoard = new CheckBox();
+        if (currentRoom.isAdditionalServiceBoardHalf().equals("Available")) {
+            checkBoxHalfBoard.setDisable(true);
+            checkBoxHalfBoard.setSelected(true);
+            checkBoxHalfBoard.setText("Half board for " + df2.format(currentRoom.getPricePerNight() / 10) + " kr. included");
+        } else {
+            checkBoxHalfBoard.setDisable(true);
+            checkBoxHalfBoard.setText("Half board is not available for this room ;(");
+        }
+
+        CheckBox checkBoxFullBoard = new CheckBox();
+        if (currentRoom.isAdditionalServiceBoardFull().equals("Available")) {
+            checkBoxFullBoard.setDisable(true);
+            checkBoxFullBoard.setSelected(true);
+            checkBoxFullBoard.setText("Full board for " + df2.format(currentRoom.getPricePerNight() / 5) + " kr. included");
+        } else {
+            checkBoxFullBoard.setDisable(true);
+            checkBoxFullBoard.setText("Full board is not available for this room ;(");
+        }
+
         CheckBox checkBoxExtraBed = new CheckBox();
-        checkBoxExtraBed.setText("Extra bed (costs " + (currentRoom.getPricePerNight() / 10) + " kr. extra)");
+        if (currentRoom.isAdditionalServiceExtraBed().equals("Available")) {
+            checkBoxExtraBed.setDisable(true);
+            checkBoxExtraBed.setSelected(true);
+            checkBoxExtraBed.setText("Extra bed for " + df2.format(currentRoom.getPricePerNight() / 20) + " kr. included");
+        } else {
+            checkBoxExtraBed.setDisable(true);
+            checkBoxExtraBed.setText("Extra bed is not available for this room ;(");
+        }
+
 
         //---------------------------------------------------------------------------------------------DatePicker
 
-        DatePicker datePickerBookingFrom = new DatePicker();
+        DatePicker datePickerBookingFrom = SC.datePicker();
         datePickerBookingFrom.setMaxSize(200, 100);
-        datePickerBookingFrom.setPromptText("Rent room from this date");
+        if (currentRoom.isAvailability().equals("Not available")) {
+            datePickerBookingFrom.setPromptText("Booked from " + currentRoom.getBookingStart().toString());
+        } else {
+            datePickerBookingFrom.setPromptText("Set a new booking-start date");
+        }
         datePickerBookingFrom.setOnAction(e -> {
             dateFrom = Date.valueOf(datePickerBookingFrom.getValue());
+
+            if (dateFrom.toLocalDate().isEqual(dateNow.toLocalDate())) {
+                SC.uniStageAlert("Why change it to its already booked date? :/");
+                return;
+            }
+
+            if (dateFrom.toLocalDate().isBefore(dateNow.toLocalDate())) {
+                SC.uniStageAlert("Please pick another date that is FROM TODAY and on...");
+                return;
+            }
+
+            if (dateFrom.toLocalDate().isAfter(dateTo.toLocalDate())) {
+                SC.uniStageAlert("How is it even possible to begin your vacation\n" +
+                        "before your start-date? Back to the future vibes? ;)");
+                return;
+            }
+
             roomOptionDateBookingFrom();
         });
 
-        DatePicker datePickerBookingTo = new DatePicker();
+        DatePicker datePickerBookingTo = SC.datePicker();
         datePickerBookingTo.setMaxSize(200, 100);
-        datePickerBookingTo.setPromptText("Rent room to this date");
+        if (currentRoom.isAvailability().equals("Not available")) {
+            datePickerBookingTo.setPromptText("Booked to " + currentRoom.getBookingEnd().toString());
+        } else {
+            datePickerBookingTo.setPromptText("Set a new booking-end date");
+        }
         datePickerBookingTo.setOnAction(e -> {
             dateTo = Date.valueOf(datePickerBookingTo.getValue());
+
+            if (dateTo.toLocalDate().isBefore(dateNow.toLocalDate())) {
+                SC.uniStageAlert("Try again, and this time pick a date FROM today's date and so on!");
+                return;
+            }
+
+            if (dateTo.toLocalDate().isBefore(dateFrom.toLocalDate())) {
+                SC.uniStageAlert("Are you trying to bend time,\n" +
+                        "or just trying to crash this awesome app ;)\n" +
+                        "How will you end your not-yet-started vacation?");
+                return;
+            }
+
+
             roomOptionDateBookingTo();
         });
 
         //------------------------------------------------------------------------------------------Button
 
-        Button buttonSaveSettings = SC.uniButton("Save settings");
-        //buttonSaveSettings.setOnAction(e -> stagePrimary.setScene(sceneRoom));
-
-        Button buttonRoomCancel = SC.uniButton("Clear booking");
-        //buttonRoomCancel.setOnAction(e -> stagePrimary.setScene(sceneRoom));
-
-        Button buttonSceneCancel = SC.uniButton("Cancel");
-        buttonSceneCancel.setOnAction(e -> stagePrimary.setScene(menuRoom()));
+        Button buttonCancel = SC.uniButton("Cancel");
+        buttonCancel.setOnAction(e -> {
+            stagePrimary.setScene(menuRoom());
+        });
 
         Button buttonSceneExit = SC.uniButton("Exit");
-        buttonSceneExit.setOnAction(e -> stagePrimary.close());
+        buttonSceneExit.setOnAction(e -> {
+            stagePrimary.close();
+        });
 
         //----------------------------------------------------------------------------------tableViewRenter
 
         TableView<Customer> tableViewRenter = SC.uniTableView();
         if (currentRoom != null) {
 
-            tableViewRenter.setItems(returnRenters(currentRoom.getId()));
+            tableViewRenter.setItems(returnRenters(currentRoom.getId())); //show customers in currentRoom
 
             TableColumn<Customer, Character> tableColumnRenterName = new TableColumn<>("Renter Name");
             tableColumnRenterName.setCellValueFactory(new PropertyValueFactory<>("name"));
 
-            //tableColumnCustomerRoomId.setMinWidth( 30 );
             tableViewRenter.getColumns().addAll(tableColumnRenterName);
-            tableViewRenter.setBackground(new Background(new BackgroundFill(Color.GRAY, CornerRadii.EMPTY, Insets.EMPTY)));
         }
+
         if (returnRenters(currentRoom.getId()).size() <= 0) {
-            tableViewRenter.setBackground(new Background(new BackgroundFill(Color.GRAY, CornerRadii.EMPTY, Insets.EMPTY)));
             tableViewRenter.setPlaceholder(SC.uniLabel("This room has no guests... Jet!"));
         }
 
         tableViewRenter.setOnMouseClicked(e -> {
-            System.out.println("1 Inne i tableViewRenter");
             if (SC.mouseEventDoubleClick(e) && (returnRenters(currentRoom.getId()).size() > 0)) {
-                System.out.println("2 Inne i tableViewRenter");
 
                 currentCustomer = tableViewRenter.getSelectionModel().getSelectedItem();
+                currentCustomer.setRoom(0);
+                //returnRenters(currentRoom.getId());
+                tableViewRenter.setItems(returnRenters(currentRoom.getId()));
+
                 sqlProgram.removeCustomerFromRoom(currentCustomer.getId());
-
-                /*if (returnRenters(currentRoom.getId()).size() < currentRoom.getMaxAmountOfCustomers()) {
-                    System.out.println("2 Inne i tableViewRenter");
-
-                }*/
             }
         });
 
         //--------------------------------------------------------------------------------------tableViewCustomer
 
         TableView<Customer> tableViewCustomer = SC.uniTableView();
-        if (returnRenters(currentRoom.getId()).size() <= currentRoom.getMaxAmountOfCustomers()) {
+        if (returnRenters(currentRoom.getId()).size() < currentRoom.getMaxAmountOfCustomers()) {
             tableViewCustomer.setItems(customers);
-            tableViewCustomer.setBackground(new Background(new BackgroundFill(Color.GRAY, CornerRadii.EMPTY, Insets.EMPTY)));
         } else {
-            tableViewCustomer.isTableMenuButtonVisible();
             tableViewCustomer.setItems(customers);
-            //tableViewCustomer.setSelectionModel(null);
-            tableViewCustomer.setBackground(new Background(new BackgroundFill(Color.GRAY, CornerRadii.EMPTY, Insets.EMPTY)));
             tableViewCustomer.setPlaceholder(SC.uniLabel("This room has no guests... Jet!"));
         }
+
         TableColumn<Customer, Character> tableColumnCustomerName = new TableColumn<>("Available Customers");
         tableColumnCustomerName.setCellValueFactory(new PropertyValueFactory<>("name"));
 
         tableViewCustomer.getColumns().addAll(tableColumnCustomerName);
 
         tableViewCustomer.setOnMouseClicked(e -> {
-            System.out.println("1 Inne i customers");
 
             if (SC.mouseEventDoubleClick(e)) {
-                System.out.println("2 Inne i customers");
 
-                if (returnRenters(currentRoom.getId()).size() <= currentRoom.getMaxAmountOfCustomers()) {
+                if (returnRenters(currentRoom.getId()).size() < currentRoom.getMaxAmountOfCustomers()) {
+
                     currentCustomer = tableViewCustomer.getSelectionModel().getSelectedItem();
-                    System.out.println(currentCustomer.getName() + "3 currentCustomer i customers");
 
-
-                    System.out.println("4 utanför for loop customers");
-                    for (Customer customer : returnRenters(currentRoom.getId())) {
-                        System.out.println("4.1 Inne i for loop customers");
-                        if (customer.getId() == currentCustomer.getId()) {
-                            System.out.println("5 Inne i for-loop-if customers");
+                    for (Customer customerRoomRenter : returnRenters(currentRoom.getId())) {
+                        if (customerRoomRenter.getName().equals(currentCustomer.getName())) {
                             SC.uniStageAlert(currentCustomer.getName() + " already rents this room!");
                             return;
                         }
                     }
 
-                    //currentSaveSettingsers.add(currentCustomer);
-                    System.out.println("6  customers");
                     sqlProgram.addCustomerToRoom(currentRoom.getId(), currentCustomer.getId());
-                    //sqlProgram.refreshMethods();
+                    currentCustomer.setRoom(currentRoom.getId());
+                    tableViewRenter.setItems(returnRenters(currentRoom.getId()));
                     return;
                 }
-
-                System.out.println("7  customers");
 
                 SC.uniStageAlert("This room is fully booked!\n\n" +
                         "Please choose another room, or remove renting customer(s)!");
@@ -465,16 +494,13 @@ public class Program extends Application {
 
         //-----------------------------------------------------------------------------------------------
 
-        Label label = new Label();
+        Label label = SC.uniLabel("");
         if (currentRoom != null) {
-            label.setText("Welcome to room editing page. Here you can edit rooms, add and remove customers.\n" +
-                    "By double clicking on a customer, you can either add or remove her/him, IF the room isnt full yet.\n\n" +
+            label.setText("Double clicking on a customer, you can either add or remove her/him.\n" +
                     "Information about this room:\n" +
-                    "City: " + currentRoom.getCity() + "Room size: " + currentRoom.getRoomSize() + "Price/night: " + currentRoom.getPricePerNight() + "\n\n" +
+                    "City: " + currentRoom.getCity() + " Room size: " + currentRoom.getRoomSize() + "Price/night: " + currentRoom.getPricePerNight() + "\n\n" +
                     "Facilities and additions: " + "\n" +
                     "Rent per night: " + "\n");
-
-            System.out.println(currentRoom.getCity() + " currentRoom.getCity()\nfrom menuSettings");
         }
 
         //-----------------------------------------------------------------------------------------------
@@ -485,16 +511,16 @@ public class Program extends Application {
 
         gridTop.setAlignment(Pos.CENTER_LEFT);
         gridTop.add(label, 0, 0);
-        gridTop.add(datePickerBookingFrom, 0, 1);
-        gridTop.add(datePickerBookingTo, 0, 2);
-        gridTop.add(checkBoxExtraBed, 1, 1);
-        gridTop.add(buttonSaveSettings, 1, 2);
 
-        gridCenter.add(tableViewRenter, 0, 0);
-        gridCenter.add(tableViewCustomer, 1, 0);
+        gridCenter.add(datePickerBookingFrom, 0, 0);
+        gridCenter.add(datePickerBookingTo, 0, 1);
+        gridCenter.add(tableViewRenter, 0, 3);
+        gridCenter.add(checkBoxHalfBoard, 1, 0);
+        gridCenter.add(checkBoxFullBoard, 1, 1);
+        gridCenter.add(checkBoxExtraBed, 1, 2);
+        gridCenter.add(tableViewCustomer, 1, 3);
 
-        // node, columnIndex, rowIndex, columnSpan, rowSpan:
-        gridBottom.add(buttonSceneCancel, 0, 0, 1, 1);
+        gridBottom.add(buttonCancel, 0, 0, 1, 1);
         gridBottom.add(buttonSceneExit, 1, 0, 1, 1);
 
         //-----------------------------------------------------------------------------------------------
@@ -504,13 +530,13 @@ public class Program extends Application {
     }
 
     private Scene menuAddUser() {
+        customers = getCustomers();
 
         GridPane grid = SC.uniGrid();
 
         //-----------------------------------------------------------------------------------------Label
 
-        Label labelUsername = SC.uniLabel("Register/add new user");
-        Label labelMsg = SC.uniLabel("Register/add new user");
+        Label labelMsg = SC.uniLabel("Any new customers?...");
 
         //------------------------------------------------------------------------------------------TextField
 
@@ -520,9 +546,8 @@ public class Program extends Application {
         //----------------------------------------------------------------------------------------TableView
 
         TableView<Customer> tableViewCustomer = SC.uniTableView();
-        tableViewCustomer.setItems(getCustomers());
+        tableViewCustomer.setItems(customers);
 
-        tableViewCustomer.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
         TableColumn<Customer, String> tableColumnCustomerName = new TableColumn<>("Name");
         tableColumnCustomerName.setCellValueFactory(new PropertyValueFactory<>("name"));
 
@@ -532,13 +557,21 @@ public class Program extends Application {
 
         Button buttonAddUser = SC.uniButton("Add user");
         buttonAddUser.setOnAction(e -> {
-            System.out.println(textFieldUsername.getText());
-            labelMsg.setText(sqlProgram.registerNewCustomer(textFieldUsername.getText()));
-            /*if (!textFieldUsername.getText().isBlank() && textFieldUsername.getText().length() >= 3) {
-                customersNames.add(new Customer(textFieldUsername.getText()));
-            }*/
-            textFieldUsername.clear();
-            tableViewCustomer.refresh();
+
+            String addedMsg = sqlProgram.registerNewCustomer(textFieldUsername.getText());
+            if (addedMsg.contains("already")) {
+                labelMsg.setText(textFieldUsername.getText() + " is already registered!");
+                return;
+            }
+
+            if (textFieldUsername.getLength() < 3 || addedMsg.isBlank()) {
+                labelMsg.setText("Try again with at least 3 symbols!");
+                return;
+            }
+
+            sqlProgram.registerNewCustomer(textFieldUsername.getText());
+            sqlProgram.refreshMethods();
+            stagePrimary.setScene(menuAddUser());
         });
 
         Button buttonCancel = SC.uniButton("Cancel");
@@ -549,18 +582,17 @@ public class Program extends Application {
 
         //-------------------------------------------------------------------------------------------GridPane
 
-        grid.add(labelUsername, 0, 0);
-        grid.add(textFieldUsername, 0, 1);
-        grid.add(labelMsg, 0, 2);
-        grid.add(tableViewCustomer, 0, 3);
-        grid.add(buttonAddUser, 1, 1);
-        grid.add(buttonCancel, 1, 2);
-        grid.add(buttonExit, 1, 3);
+        grid.add(labelMsg, 0, 0, 2, 1);
+        grid.add(textFieldUsername, 0, 1, 1, 1);
+        grid.add(buttonAddUser, 1, 1, 1, 1);
+        grid.add(tableViewCustomer, 0, 3, 2, 1);
+        grid.add(buttonCancel, 0, 4, 1, 1);
+        grid.add(buttonExit, 1, 4, 1, 1);
 
         //-----------------------------------------------------------------------------------------------
 
         Scene scene = SC.uniScene(grid);
-        menuAddCustomerScene = scene;
+        //sceneAddCustomerScene = scene;
         return scene;
     }
 
@@ -572,6 +604,7 @@ public class Program extends Application {
         for (Customer customer : this.customers) {
             if (customer.getRoom() == roomId) {
                 customers.add(customer);
+
             }
         }
         return customers;
@@ -580,29 +613,57 @@ public class Program extends Application {
     //-----------------------------------------------------------------------------------------------
 
     private void roomOptionDateBookingFrom() {
-        if (dateFrom.toLocalDate().isBefore(dateNow.toLocalDate())) {
-            SC.uniStageAlert("Please pick another date that is FROM TODAY and on...");
-            return;
-        }
 
-        if (dateFrom.toLocalDate().isEqual(dateNow.toLocalDate()) ||
-                dateFrom.toLocalDate().isAfter(dateNow.toLocalDate())) {
+        SC.uniStageAlert("You have changed the booking start-date to:\n" +
+                dateFrom);
 
-            sqlProgram.updateRoomBookingStart(dateFrom, currentRoom.getId());
-        }
+        dateFrom = Date.valueOf(dateFrom.toLocalDate().plusDays(1));
+        sqlProgram.updateRoomBookingStart(dateFrom, currentRoom.getId());
+        sqlProgram.updateRoomAvailability(currentRoom.getId(), 0);
     }
 
     private void roomOptionDateBookingTo() {
+        SC.uniStageAlert("You have changed the booking end-date to:\n" +
+                dateTo);
 
-        if (dateTo.toLocalDate().isBefore(dateNow.toLocalDate())) {
-            SC.uniStageAlert("Please pick another date that is FROM TODAY and on...");
-            return;
+        dateTo = Date.valueOf(dateTo.toLocalDate().plusDays(1));
+
+        sqlProgram.updateRoomBookingEnd(dateTo, currentRoom.getId());
+        sqlProgram.updateRoomAvailability(currentRoom.getId(), 0);
+    }
+
+    private void roomOptionDistanceToBeach(TableView tableView) {
+
+        if (distanceToBeach >= 1) {
+
+            optionDistanceToBeach = true;
+            checkWhichOptionsAreChecked();
+            tableView.setItems(listWithFilteredRooms);
+
+        } else {
+
+            optionDistanceToBeach = false;
+            listWithFilteredRooms = rooms;
+            checkWhichOptionsAreChecked();
+            tableView.setItems(listWithFilteredRooms);
+
         }
+    }
 
-        if (dateTo.toLocalDate().isEqual(dateNow.toLocalDate()) ||
-                dateTo.toLocalDate().isAfter(dateNow.toLocalDate())) {
+    private void roomOptionDistanceToCity(TableView tableView) {
+        if (distanceToCity >= 1) {
 
-            sqlProgram.updateRoomBookingEnd(dateTo, currentRoom.getId());
+            optionDistanceToCity = true;
+            checkWhichOptionsAreChecked();
+            tableView.setItems(listWithFilteredRooms);
+
+        } else {
+
+            optionDistanceToCity = false;
+            listWithFilteredRooms = rooms;
+            checkWhichOptionsAreChecked();
+            tableView.setItems(listWithFilteredRooms);
+
         }
     }
 
@@ -610,14 +671,12 @@ public class Program extends Application {
 
         if (optionRatingValue > 0) {
 
-            System.out.println("inne i roomOptionRating");
             optionRating = true;
             checkWhichOptionsAreChecked();
             tableView.setItems(listWithFilteredRooms);
 
         } else {
 
-            System.out.println("inne i !roomOptionRating");
             optionRating = false;
             listWithFilteredRooms = rooms;
             checkWhichOptionsAreChecked();
@@ -628,14 +687,12 @@ public class Program extends Application {
 
     private void roomOptionAvailability(CheckBox checkBox, TableView tableView) {
         if (checkBox.isSelected()) {
-            System.out.println("inne i optionAvailability");
             optionAvailability = true;
             checkWhichOptionsAreChecked();
             tableView.setItems(listWithFilteredRooms);
         }
 
         if (!checkBox.isSelected()) {
-            System.out.println("inne i !optionAvailability");
             optionAvailability = false;
             listWithFilteredRooms = rooms;
             checkWhichOptionsAreChecked();
@@ -645,14 +702,12 @@ public class Program extends Application {
 
     private void roomOptionFacilitiesRestaurant(CheckBox checkBox, TableView tableView) {
         if (checkBox.isSelected()) {
-            System.out.println("inne i roomOptionFacilitiesRestaurant");
             optionCheckedFacilityRestaurant = true;
             checkWhichOptionsAreChecked();
             tableView.setItems(listWithFilteredRooms);
         }
 
         if (!checkBox.isSelected()) {
-            System.out.println("inne i !roomOptionFacilitiesRestaurant");
             optionCheckedFacilityRestaurant = false;
             listWithFilteredRooms = rooms;
             checkWhichOptionsAreChecked();
@@ -662,14 +717,12 @@ public class Program extends Application {
 
     private void roomOptionFacilitiesPool(CheckBox checkBox, TableView tableView) {
         if (checkBox.isSelected()) {
-            System.out.println("inne i roomOptionFacilitiesPool");
             optionCheckedFacilityPool = true;
             checkWhichOptionsAreChecked();
             tableView.setItems(listWithFilteredRooms);
         }
 
         if (!checkBox.isSelected()) {
-            System.out.println("inne i !roomOptionFacilitiesPool");
             optionCheckedFacilityPool = false;
             listWithFilteredRooms = rooms;
             checkWhichOptionsAreChecked();
@@ -679,14 +732,12 @@ public class Program extends Application {
 
     private void roomOptionFacilitiesChildrenClub(CheckBox checkBox, TableView tableView) {
         if (checkBox.isSelected()) {
-            System.out.println("inne i roomOptionFacilitiesChildrenClub");
             optionCheckedFacilityChildrenClub = true;
             checkWhichOptionsAreChecked();
             tableView.setItems(listWithFilteredRooms);
         }
 
         if (!checkBox.isSelected()) {
-            System.out.println("inne i optionCheckedFacilityChildrenClub");
             optionCheckedFacilityChildrenClub = false;
             listWithFilteredRooms = rooms;
             checkWhichOptionsAreChecked();
@@ -696,14 +747,12 @@ public class Program extends Application {
 
     private void roomOptionFacilitiesEveningEntertainment(CheckBox checkBox, TableView tableView) {
         if (checkBox.isSelected()) {
-            System.out.println("inne i optionCheckedFacilityEveningEntertainment");
             optionCheckedFacilityEveningEntertainment = true;
             checkWhichOptionsAreChecked();
             tableView.setItems(listWithFilteredRooms);
         }
 
         if (!checkBox.isSelected()) {
-            System.out.println("inne i optionCheckedFacilityEveningEntertainment");
             optionCheckedFacilityEveningEntertainment = false;
             listWithFilteredRooms = rooms;
             checkWhichOptionsAreChecked();
@@ -713,14 +762,12 @@ public class Program extends Application {
 
     private void roomOptionAdditionalBoardHalf(CheckBox checkBox, TableView tableView) {
         if (checkBox.isSelected()) {
-            System.out.println("inne i optionCheckedAddBoardHalf");
             optionCheckedAddBoardHalf = true;
             checkWhichOptionsAreChecked();
             tableView.setItems(listWithFilteredRooms);
         }
 
         if (!checkBox.isSelected()) {
-            System.out.println("inne i optionCheckedAddBoardHalf");
             optionCheckedAddBoardHalf = false;
             listWithFilteredRooms = rooms;
             checkWhichOptionsAreChecked();
@@ -730,14 +777,12 @@ public class Program extends Application {
 
     private void roomOptionAdditionalBoardFull(CheckBox checkBox, TableView tableView) {
         if (checkBox.isSelected()) {
-            System.out.println("inne i optionCheckedAddBoardFull");
             optionCheckedAddBoardFull = true;
             checkWhichOptionsAreChecked();
             tableView.setItems(listWithFilteredRooms);
         }
 
         if (!checkBox.isSelected()) {
-            System.out.println("inne i optionCheckedAddBoardFull");
             optionCheckedAddBoardFull = false;
             listWithFilteredRooms = rooms;
             checkWhichOptionsAreChecked();
@@ -747,14 +792,12 @@ public class Program extends Application {
 
     private void roomOptionAdditionalExtraBed(CheckBox checkBox, TableView tableView) {
         if (checkBox.isSelected()) {
-            System.out.println("inne i optionCheckedAddExtraBed");
             optionCheckedAddExtraBed = true;
             checkWhichOptionsAreChecked();
             tableView.setItems(listWithFilteredRooms);
         }
 
         if (!checkBox.isSelected()) {
-            System.out.println("inne i optionCheckedAddExtraBed");
             optionCheckedAddExtraBed = false;
             listWithFilteredRooms = rooms;
             checkWhichOptionsAreChecked();
@@ -766,15 +809,34 @@ public class Program extends Application {
 
     private void checkWhichOptionsAreChecked() {
 
+        if (optionDistanceToBeach == true) {
+            ObservableList<Room> tempList = FXCollections.observableArrayList();
+            listWithFilteredRooms = rooms;
+            for (Room room : listWithFilteredRooms) {
+                if (room.getDistanceToBeach() <= distanceToBeach) {
+                    tempList.add(room);
+                }
+            }
+            listWithFilteredRooms = tempList;
+        }
+
+        if (optionDistanceToCity == true) {
+            ObservableList<Room> tempList = FXCollections.observableArrayList();
+            listWithFilteredRooms = rooms;
+            for (Room room : listWithFilteredRooms) {
+                if (room.getDistanceToCity() <= distanceToCity) {
+                    tempList.add(room);
+                }
+            }
+            listWithFilteredRooms = tempList;
+        }
+
         if (optionRating == true) {
             ObservableList<Room> tempList = FXCollections.observableArrayList();
             listWithFilteredRooms = rooms;
             for (Room room : listWithFilteredRooms) {
                 if (room.getRating() <= optionRatingValue) {
-                    System.out.println("getRating");
-                    //listWithFilteredRooms.add(room);
                     tempList.add(room);
-                    //optionAvailability = false;
                 }
             }
             listWithFilteredRooms = tempList;
@@ -783,11 +845,8 @@ public class Program extends Application {
         if (optionAvailability == true) {
             ObservableList<Room> tempList = FXCollections.observableArrayList();
             for (Room room : listWithFilteredRooms) {
-                if (room.isAvailability().equalsIgnoreCase("yes")) {
-                    System.out.println("isAvailability");
-                    //listWithFilteredRooms.add(room);
+                if (room.isAvailability().equalsIgnoreCase("available")) {
                     tempList.add(room);
-                    //optionAvailability = false;
                 }
             }
             listWithFilteredRooms = tempList;
@@ -796,11 +855,8 @@ public class Program extends Application {
         if (optionCheckedFacilityRestaurant == true) {
             ObservableList<Room> tempList = FXCollections.observableArrayList();
             for (Room room : listWithFilteredRooms) {
-                if (room.isFacilitiesRestaurant().equalsIgnoreCase("yes")) {
-                    System.out.println("isFacilitiesRestaurant");
-                    //listWithFilteredRooms.add(room);
+                if (room.isFacilitiesRestaurant().equalsIgnoreCase("available")) {
                     tempList.add(room);
-                    //optionCheckedFacilityRestaurant = false;
                 }
             }
             listWithFilteredRooms = tempList;
@@ -809,11 +865,8 @@ public class Program extends Application {
         if (optionCheckedFacilityPool == true) {
             ObservableList<Room> tempList = FXCollections.observableArrayList();
             for (Room room : listWithFilteredRooms) {
-                if (room.isFacilitiesPool().equalsIgnoreCase("yes")) {
-                    System.out.println("isFacilitiesPool");
-                    //listWithFilteredRooms.add(room);
+                if (room.isFacilitiesPool().equalsIgnoreCase("available")) {
                     tempList.add(room);
-                    //optionCheckedFacilityPool = false;
                 }
             }
             listWithFilteredRooms = tempList;
@@ -822,11 +875,8 @@ public class Program extends Application {
         if (optionCheckedFacilityChildrenClub == true) {
             ObservableList<Room> tempList = FXCollections.observableArrayList();
             for (Room room : listWithFilteredRooms) {
-                if (room.isFacilitiesChildrenClub().equalsIgnoreCase("yes")) {
-                    System.out.println("isFacilitiesChildrenClub");
-                    //listWithFilteredRooms.add(room);
+                if (room.isFacilitiesChildrenClub().equalsIgnoreCase("available")) {
                     tempList.add(room);
-                    //optionCheckedFacilityChildrenClub = false;
                 }
             }
             listWithFilteredRooms = tempList;
@@ -835,11 +885,8 @@ public class Program extends Application {
         if (optionCheckedFacilityEveningEntertainment == true) {
             ObservableList<Room> tempList = FXCollections.observableArrayList();
             for (Room room : listWithFilteredRooms) {
-                if (room.isFacilitiesEveningEntertainment().equalsIgnoreCase("yes")) {
-                    System.out.println("isFacilitiesEveningEntertainment");
-                    //listWithFilteredRooms.add(room);
+                if (room.isFacilitiesEveningEntertainment().equalsIgnoreCase("available")) {
                     tempList.add(room);
-                    //optionCheckedFacilityEveningEntertainment = false;
                 }
             }
             listWithFilteredRooms = tempList;
@@ -848,11 +895,8 @@ public class Program extends Application {
         if (optionCheckedAddBoardFull == true) {
             ObservableList<Room> tempList = FXCollections.observableArrayList();
             for (Room room : listWithFilteredRooms) {
-                if (room.isAdditionalServiceBoardFull().equalsIgnoreCase("yes")) {
-                    System.out.println("optionCheckedAddBoardFull");
-                    //listWithFilteredRooms.add(room);
+                if (room.isAdditionalServiceBoardFull().equalsIgnoreCase("available")) {
                     tempList.add(room);
-                    //optionCheckedAddBoardFull = false;
                 }
             }
             listWithFilteredRooms = tempList;
@@ -861,11 +905,8 @@ public class Program extends Application {
         if (optionCheckedAddBoardHalf == true) {
             ObservableList<Room> tempList = FXCollections.observableArrayList();
             for (Room room : listWithFilteredRooms) {
-                if (room.isAdditionalServiceBoardHalf().equalsIgnoreCase("yes")) {
-                    System.out.println("optionCheckedAddBoardHalf");
-                    //listWithFilteredRooms.add(room);
+                if (room.isAdditionalServiceBoardHalf().equalsIgnoreCase("available")) {
                     tempList.add(room);
-                    //optionCheckedAddBoardHalf = false;
                 }
             }
             listWithFilteredRooms = tempList;
@@ -874,22 +915,18 @@ public class Program extends Application {
         if (optionCheckedAddExtraBed == true) {
             ObservableList<Room> tempList = FXCollections.observableArrayList();
             for (Room room : listWithFilteredRooms) {
-                if (room.isAdditionalServiceExtraBed().equalsIgnoreCase("yes")) {
-                    System.out.println("optionCheckedAddExtraBed");
-                    //listWithFilteredRooms.add(room);
+                if (room.isAdditionalServiceExtraBed().equalsIgnoreCase("available")) {
                     tempList.add(room);
-                    //optionCheckedAddExtraBed = false;
                 }
             }
             listWithFilteredRooms = tempList;
         }
-
-
     }
 
     //------------------------------------------------------------------------------------------------------------------
 
     private ObservableList<Customer> getCustomers() {
+
         ObservableList<Customer> customers = FXCollections.observableArrayList();
         for (Customer customer : sqlProgram.getCustomers()) {
             customers.add(new Customer(
@@ -898,7 +935,6 @@ public class Program extends Application {
         }
 
         this.customers = customers;
-        customersNames = customers;
         return customers;
     }
 
@@ -908,7 +944,8 @@ public class Program extends Application {
             rooms.add(new Room(
                     room.getId(), room.getCity(), room.getRoomSize(), room.getBookingStart(), room.getBookingEnd(), room.getMaxAmountOfCustomers(), returnTrueIfYesFalseIfNo(room.isFacilitiesRestaurant()),
                     returnTrueIfYesFalseIfNo(room.isFacilitiesPool()), returnTrueIfYesFalseIfNo(room.isFacilitiesEveningEntertainment()), returnTrueIfYesFalseIfNo(room.isFacilitiesChildrenClub()), returnTrueIfYesFalseIfNo(room.isAdditionalServiceBoardHalf()),
-                    returnTrueIfYesFalseIfNo(room.isAdditionalServiceBoardFull()), returnTrueIfYesFalseIfNo(room.isAdditionalServiceExtraBed()), room.getPricePerNight(), room.getRating(), returnTrueIfYesFalseIfNo(room.isAvailability())
+                    returnTrueIfYesFalseIfNo(room.isAdditionalServiceBoardFull()), returnTrueIfYesFalseIfNo(room.isAdditionalServiceExtraBed()), room.getPricePerNight(), room.getRating(),
+                    room.getDistanceToCity(), room.getDistanceToBeach(), returnTrueIfYesFalseIfNo(room.isAvailability())
             ));
         }
         this.rooms = rooms;
@@ -917,11 +954,18 @@ public class Program extends Application {
     //------------------------------------------------------------------------------------------------------------------
 
     private boolean returnTrueIfYesFalseIfNo(String str) {
-        if (str.equalsIgnoreCase("yes")) {
+        if (str.equalsIgnoreCase("available")) {
             return true;
         }
         return false;
     }
+
+    /*private boolean returnTrueIfYesFalseIfNo(String str) {
+        if (str.equalsIgnoreCase("yes")) {
+            return true;
+        }
+        return false;
+    }*/
 
     //------------------------------------------------------------------------------------------------------------------
 
@@ -930,60 +974,5 @@ public class Program extends Application {
 
     //------------------------------------------------------------------------------------------------------------------
 
-
-    /*
-    private void roomOptionFacilitiesRestaurant(CheckBox checkBox, TableView tableView) {
-
-        if (checkBox.isSelected()) {
-            System.out.println("1 Rest");
-
-            if (listWithFilteredRooms.size() > 0) {
-                System.out.println("2 Rest");
-                for (Room r : listWithFilteredRooms) {
-                    if (r.isFacilitiesRestaurant()) {
-                        System.out.println("3 Rest");
-                        restaurantFilterSearch.add(r);
-                    }
-                }
-                tableView.setItems(restaurantFilterSearch);
-                gatherAllFilterLists();
-                return;
-            }
-
-            for (Room r : rooms) {
-                if (r.isFacilitiesRestaurant()) {
-                    System.out.println("4 Rest");
-                    restaurantFilterSearch.add(r);
-                }
-            }
-            tableView.setItems(restaurantFilterSearch);
-            gatherAllFilterLists();
-            return;
-        }
-
-        if (!checkBox.isSelected()) {
-            System.out.println("5 Rest");
-            SC.resetRoomList(restaurantFilterSearch);
-            gatherAllFilterLists();
-
-            if (listWithFilteredRooms.size() > 0) {
-                System.out.println("6 Rest");
-                tableView.setItems(listWithFilteredRooms);
-                return;
-            }
-
-            tableView.setItems(rooms);
-        }
-    }
-    }*/
-
-    /*private void miscMethods(){
-        ObservableList<Room> newList =
-                rooms.stream()
-                        .filter(x -> x.isFacilitiesRestaurant().equals("Yes"))
-                        .collect(Collectors.collectingAndThen(toList(), l -> FXCollections.observableArrayList(l)));
-
-        tableView.setItems(newList);
-    }*/
 
 }
